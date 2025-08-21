@@ -7,11 +7,15 @@ metadata:
     team: tsm
 spec:
   image: {{ image }}
+  port: 8080
   replicas:
     min: 1
     max: 2
     cpuThresholdPercentage: 90
-  port: 8080
+  filesFrom:
+    - emptyDir:
+        medium: Memory
+      mountPath: /app/docs
   liveness:
     path: /internal/is_alive
   readiness:

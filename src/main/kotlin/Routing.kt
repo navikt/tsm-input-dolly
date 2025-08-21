@@ -9,6 +9,9 @@ fun Application.configureRouting(
     sykmeldingService: SykmeldingService
 ) {
     routing {
+        get("/") {
+            call.respondText("Dummy GET! :)")
+        }
         post("/test") {
             call.respond(sykmeldingService.test())
         }
