@@ -1,0 +1,17 @@
+on:
+  push:
+
+permissions:
+  actions: read
+  contents: read
+  security-events: write
+  packages: write
+  id-token: write
+
+jobs:
+  build:
+    uses: navikt/teamsykmelding-github-actions-workflows/.github/workflows/gradle-21.yaml@main
+    secrets: inherit
+    with:
+      app: 'tsm-input-dolly'
+      only-dev: true
