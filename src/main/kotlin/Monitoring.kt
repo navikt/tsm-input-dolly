@@ -1,17 +1,20 @@
 package no.nav.tsm
 
-import com.codahale.metrics.Slf4jReporter
 import io.ktor.server.application.*
-import io.ktor.server.metrics.dropwizard.*
-import java.util.concurrent.TimeUnit
+import io.ktor.server.metrics.micrometer.*
+import io.ktor.server.response.respond
+import io.ktor.server.routing.get
+import io.ktor.server.routing.routing
+import io.micrometer.prometheus.PrometheusConfig
+import io.micrometer.prometheus.PrometheusMeterRegistry
 
 fun Application.configureMonitoring() {
-    install(DropwizardMetrics) {
-        Slf4jReporter.forRegistry(registry)
-            .outputTo(this@configureMonitoring.log)
-            .convertRatesTo(TimeUnit.SECONDS)
-            .convertDurationsTo(TimeUnit.MILLISECONDS)
-            .build()
-            .start(10, TimeUnit.SECONDS)
+    val appMicrometerRegistry = PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
+    install(MicrometerMetrics) { registry = appMicrometerRegistry }
+
+    routing {
+        get("/internal/prometheus") {
+            call.respond(appMicrometerRegistry.scrape())
+        }
     }
 }
