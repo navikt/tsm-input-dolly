@@ -24,9 +24,11 @@ dependencies {
     implementation(libs.ktor.server.netty)
     implementation(libs.logback.classic)
     implementation(libs.ktor.server.config.yaml)
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-slf4j:1.8.1")
     implementation("io.ktor:ktor-server-metrics-micrometer:3.2.3")
     implementation("io.micrometer:micrometer-registry-prometheus:1.6.13")
     implementation("no.nav.tsm.sykmelding:input:14")
+    implementation("net.logstash.logback:logstash-logback-encoder:8.1")
     testImplementation(libs.ktor.server.test.host)
     testImplementation(libs.kotlin.test.junit)
 }
