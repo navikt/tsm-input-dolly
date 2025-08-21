@@ -13,9 +13,9 @@ metadata:
       cpuThresholdPercentage: 90
     port: 8080
     liveness:
-      path: /internal/health
+      path: /internal/is_alive
     readiness:
-      path: /internal/health
+      path: /internal/is_ready
     prometheus:
       enabled: true
       path: /internal/prometheus
