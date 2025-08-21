@@ -10,6 +10,11 @@ application {
     mainClass = "io.ktor.server.netty.EngineMain"
 }
 
+repositories {
+    mavenCentral()
+    maven { url = uri("https://github-package-registry-mirror.gc.nav.no/cached/maven-release") }
+}
+
 dependencies {
     implementation(libs.ktor.server.content.negotiation)
     implementation(libs.ktor.server.core)
@@ -21,6 +26,7 @@ dependencies {
     implementation(libs.ktor.server.config.yaml)
     implementation("io.ktor:ktor-server-metrics-micrometer:3.2.3")
     implementation("io.micrometer:micrometer-registry-prometheus:1.6.13")
+    implementation("no.nav.tsm.sykmelding:input:14")
     testImplementation(libs.ktor.server.test.host)
     testImplementation(libs.kotlin.test.junit)
 }
