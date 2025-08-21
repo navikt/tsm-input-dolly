@@ -13,7 +13,11 @@ fun Application.configureRouting(
             call.respondText("Dummy GET! :)")
         }
         post("/test") {
-            call.respond(sykmeldingService.test())
+            try {
+                call.respond(sykmeldingService.test())
+            } catch (e: Exception) {
+                call.respondText("Error: ${e.message}", status = io.ktor.http.HttpStatusCode.InternalServerError)
+            }
         }
     }
 }
