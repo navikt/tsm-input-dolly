@@ -10,6 +10,7 @@ ktor-serialization-jackson = { module = "io.ktor:ktor-serialization-jackson", ve
 ktor-server-metrics = { module = "io.ktor:ktor-server-metrics", version.ref = "ktor" }
 ktor-server-openapi = { module = "io.ktor:ktor-server-openapi", version.ref = "ktor" }
 ktor-server-netty = { module = "io.ktor:ktor-server-netty", version.ref = "ktor" }
+ktor-server-callid = { module = "io.ktor:ktor-server-call-id", version.ref = "ktor" }
 logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 ktor-server-config-yaml = { module = "io.ktor:ktor-server-config-yaml", version.ref = "ktor" }
 ktor-server-test-host = { module = "io.ktor:ktor-server-test-host", version.ref = "ktor" }
