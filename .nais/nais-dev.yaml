@@ -12,6 +12,14 @@ spec:
     min: 1
     max: 2
     cpuThresholdPercentage: 90
+  postgres:
+    cluster:
+      name: tsm-input-dolly-postgres-cluster
+      majorVersion: "17"
+      resources:
+        cpu: 50m
+        diskSize: 1Gi
+        memory: 1G
   filesFrom:
     - emptyDir:
         medium: Memory
