@@ -3,10 +3,11 @@ package no.nav.tsm
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import no.nav.tsm.sykmelding.SykmeldingService
+import no.nav.tsm.sykmelding.SykmeldingServiceTest
+import no.nav.tsm.sykmelding.api.sykmeldingApi
 
 fun Application.configureRouting(
-    sykmeldingService: SykmeldingService
+    sykmeldingServiceTest: SykmeldingServiceTest
 ) {
     routing {
         get("/") {
@@ -14,10 +15,13 @@ fun Application.configureRouting(
         }
         post("/test") {
             try {
-                call.respond(sykmeldingService.test())
+                call.respond(sykmeldingServiceTest.test())
             } catch (e: Exception) {
                 call.respondText("Error: ${e.message}", status = io.ktor.http.HttpStatusCode.InternalServerError)
             }
+        }
+        route("/api") {
+            sykmeldingApi()
         }
     }
 }

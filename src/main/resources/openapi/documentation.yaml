@@ -19,5 +19,59 @@ paths:
               examples:
                 Example#1:
                   value: "Hello World!"
+  /sykmelding/opprett:
+    post:
+      operationId: opprettSykmelding
+      tags:
+        - Sykmelding
+      summary: Opprett sykmelding
+      requestBody:
+        $ref: '#/components/requestBodies/SykmeldingBody'
+      responses:
+        '200':
+          description: Ok
+        '500':
+          description: Internal server error
 components:
-  schemas: {}
+  requestBodies:
+    SykmeldingBody:
+      description: "Opprett sykmelding"
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Sykmelding'
+  schemas:
+    Date:
+      type: string
+      format: date
+    Sykmelding:
+      type: object
+      properties:
+        fnr:
+          type: string
+        aktivitet:
+          type: array
+          items:
+            $ref: '#/components/schemas/Aktivitet'
+      required:
+          - fnr
+          - aktivitet
+    Aktivitet:
+      type: object
+      properties:
+        fom:
+          $ref: '#/components/schemas/Date'
+        tom:
+          $ref: '#/components/schemas/Date'
+        type:
+          type: string
+          enum:
+            - AKTIVITET_IKKE_MULIG
+            - AVVENTENDE,
+            - BEHANDLINGSDAGER,
+            - GRADERT,
+            - REISETILSKUDD
+      required:
+        - fom
+        - tom
+        - type

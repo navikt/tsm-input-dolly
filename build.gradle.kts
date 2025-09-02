@@ -6,6 +6,8 @@ plugins {
 group = "no.nav.tsm"
 version = "0.0.1"
 
+val koinVersion = "4.1.0-Beta8"
+
 application {
     mainClass = "io.ktor.server.netty.EngineMain"
 }
@@ -31,4 +33,6 @@ dependencies {
     implementation("net.logstash.logback:logstash-logback-encoder:8.1")
     testImplementation(libs.ktor.server.test.host)
     testImplementation(libs.kotlin.test.junit)
+    implementation("io.insert-koin:koin-ktor3:${koinVersion}")
+    implementation("io.insert-koin:koin-logger-slf4j:${koinVersion}")
 }

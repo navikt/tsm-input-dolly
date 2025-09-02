@@ -20,7 +20,7 @@ import no.nav.tsm.sykmelding.input.producer.SykmeldingInputProducer
 import java.time.LocalDate
 import java.time.OffsetDateTime
 
-class SykmeldingService(val producer: SykmeldingInputProducer) {
+class SykmeldingServiceTest(val producer: SykmeldingInputProducer) {
     fun test(): Map<String, Any> {
         producer.sendSykmelding(
             SykmeldingRecord(
