@@ -6,18 +6,60 @@ info:
 servers:
   - url: "http://0.0.0.0:8080"
 paths:
-  /:
-    get:
-      description: "Hello World!"
+  /sykmelding:
+    post:
+      operationId: opprettSykmelding
+      tags:
+        - Sykmelding
+      summary: Opprett sykmelding
+      requestBody:
+        $ref: '#/components/requestBodies/SykmeldingBody'
       responses:
-        "200":
-          description: "OK"
-          content:
-            text/plain:
-              schema:
-                type: "string"
-              examples:
-                Example#1:
-                  value: "Hello World!"
+        '200':
+          description: Ok
+        '500':
+          description: Internal server error
 components:
-  schemas: {}
+  requestBodies:
+    SykmeldingBody:
+      description: "Opprett sykmelding"
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Sykmelding'
+  schemas:
+    Date:
+      type: string
+      format: date
+    Sykmelding:
+      type: object
+      properties:
+        ident:
+          type: string
+          minLength: 11
+          maxLength: 11
+          example: "62858801562"
+          description: "FNR eller DNR"
+        aktivitet:
+          $ref: '#/components/schemas/Aktivitet'
+      required:
+          - ident
+          - aktivitet
+    Aktivitet:
+      type: object
+      properties:
+        fom:
+          $ref: '#/components/schemas/Date'
+        tom:
+          $ref: '#/components/schemas/Date'
+#        type:
+#          type: string
+#          enum:
+#            - AKTIVITET_IKKE_MULIG
+#            - AVVENTENDE,
+#            - BEHANDLINGSDAGER,
+#            - GRADERT,
+#            - REISETILSKUDD
+      required:
+        - fom
+        - tom

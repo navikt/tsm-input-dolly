@@ -1,22 +1,19 @@
 package no.nav.tsm
 
-import io.ktor.server.application.*
-import no.nav.tsm.kafka.initLocalKafka
-import no.nav.tsm.sykmelding.SykmeldingService
-import no.nav.tsm.sykmelding.input.producer.SykmeldingInputKafkaInputFactory
+import io.ktor.server.application.Application
+import io.ktor.server.netty.EngineMain
+import no.nav.tsm.plugins.configureKoin
 
 fun main(args: Array<String>) {
-    io.ktor.server.netty.EngineMain.main(args)
+    EngineMain.main(args)
 }
 
 fun Application.module() {
-    val producer = if (this.developmentMode) initLocalKafka() else SykmeldingInputKafkaInputFactory.naisProducer()
-    val sykmeldingService = SykmeldingService(producer = producer)
-
+    configureKoin()
     configureHealthChecks()
     configureAdministration()
     configureSerialization()
     configureMonitoring()
     configureHTTP()
-    configureRouting(sykmeldingService)
+    configureRouting()
 }
