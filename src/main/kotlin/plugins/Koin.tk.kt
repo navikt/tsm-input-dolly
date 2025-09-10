@@ -3,25 +3,38 @@ package no.nav.tsm.plugins
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
 import no.nav.tsm.sykmelding.SykmeldingService
-import org.koin.core.KoinApplication
+import no.nav.tsm.sykmelding.input.producer.SykmeldingInputKafkaInputFactory
+import org.apache.kafka.clients.CommonClientConfigs
 import org.koin.dsl.module
 import org.koin.ktor.plugin.Koin
 import org.koin.logger.slf4jLogger
+import java.util.Properties
 
 fun Application.configureKoin() {
+
     install(Koin) {
         slf4jLogger()
-        initProductionModules()
-        if (developmentMode) {
-            initDevelopmentModules()
-        }
+        modules(
+            sykmeldingModules()
+        )
     }
 }
 
-fun KoinApplication.initProductionModules() {
-    modules(
-        sykmeldingModule,
-    )
-}
+fun Application.sykmeldingModules() = module {
+    single {
+        if(developmentMode) {
+            SykmeldingInputKafkaInputFactory.localProducer(
+                "tsm-input-dolly",
+                "tsm",
+                Properties().apply {
+                    this[CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG] = "localhost:9092"
+                    this["security.protocol"] = "PLAINTEXT"
+                }
+            )
+        } else {
+            SykmeldingInputKafkaInputFactory.naisProducer()
+        }
+    }
 
-val sykmeldingModule = module { single { SykmeldingService() } }
+    single { SykmeldingService(get()) }
+}

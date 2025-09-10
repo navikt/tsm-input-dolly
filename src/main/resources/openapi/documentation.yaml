@@ -6,20 +6,7 @@ info:
 servers:
   - url: "http://0.0.0.0:8080"
 paths:
-  /:
-    get:
-      description: "Hello World!"
-      responses:
-        "200":
-          description: "OK"
-          content:
-            text/plain:
-              schema:
-                type: "string"
-              examples:
-                Example#1:
-                  value: "Hello World!"
-  /sykmelding/opprett:
+  /sykmelding:
     post:
       operationId: opprettSykmelding
       tags:
@@ -47,14 +34,16 @@ components:
     Sykmelding:
       type: object
       properties:
-        fnr:
+        ident:
           type: string
+          minLength: 11
+          maxLength: 11
+          example: "62858801562"
+          description: "FNR eller DNR"
         aktivitet:
-          type: array
-          items:
-            $ref: '#/components/schemas/Aktivitet'
+          $ref: '#/components/schemas/Aktivitet'
       required:
-          - fnr
+          - ident
           - aktivitet
     Aktivitet:
       type: object
@@ -63,15 +52,14 @@ components:
           $ref: '#/components/schemas/Date'
         tom:
           $ref: '#/components/schemas/Date'
-        type:
-          type: string
-          enum:
-            - AKTIVITET_IKKE_MULIG
-            - AVVENTENDE,
-            - BEHANDLINGSDAGER,
-            - GRADERT,
-            - REISETILSKUDD
+#        type:
+#          type: string
+#          enum:
+#            - AKTIVITET_IKKE_MULIG
+#            - AVVENTENDE,
+#            - BEHANDLINGSDAGER,
+#            - GRADERT,
+#            - REISETILSKUDD
       required:
         - fom
         - tom
-        - type
