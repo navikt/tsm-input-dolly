@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.ktor)
+    alias(libs.plugins.flyway)
 }
 
 group = "no.nav.tsm"
@@ -27,10 +28,9 @@ dependencies {
     implementation(libs.ktor.server.callid)
     implementation(libs.logback.classic)
     implementation(libs.ktor.server.config.yaml)
-    implementation("io.ktor:ktor-server-metrics-micrometer:3.2.3")
-    implementation("io.micrometer:micrometer-registry-prometheus:1.6.13")
-    implementation("no.nav.tsm.sykmelding:input:14")
-    implementation("net.logstash.logback:logstash-logback-encoder:8.1")
+    implementation(libs.micrometer.registry.prometheus)
+    implementation(libs.tsm.sykmelding.input)
+    implementation(libs.logback.encoder)
     testImplementation(libs.ktor.server.test.host)
     testImplementation(libs.kotlin.test.junit)
     implementation("io.insert-koin:koin-ktor3:${koinVersion}")
