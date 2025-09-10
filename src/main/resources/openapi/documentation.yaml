@@ -16,7 +16,7 @@ paths:
         $ref: '#/components/requestBodies/SykmeldingBody'
       responses:
         '200':
-          description: Ok
+          $ref: '#/components/responses/CreateSykmeldingResponse'
         '500':
           description: Internal server error
 components:
@@ -27,10 +27,25 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Sykmelding'
+  responses:
+    CreateSykmeldingResponse:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreateResponse'
+      description: "Response with sykmeldingId"
   schemas:
     Date:
       type: string
       format: date
+    CreateResponse:
+      type: object
+      properties:
+        sykmeldingId:
+          type: string
+          format: uuid
+      required:
+        - sykmeldingId
     Sykmelding:
       type: object
       properties:
@@ -43,8 +58,8 @@ components:
         aktivitet:
           $ref: '#/components/schemas/Aktivitet'
       required:
-          - ident
-          - aktivitet
+        - ident
+        - aktivitet
     Aktivitet:
       type: object
       properties:
@@ -52,14 +67,14 @@ components:
           $ref: '#/components/schemas/Date'
         tom:
           $ref: '#/components/schemas/Date'
-#        type:
-#          type: string
-#          enum:
-#            - AKTIVITET_IKKE_MULIG
-#            - AVVENTENDE,
-#            - BEHANDLINGSDAGER,
-#            - GRADERT,
-#            - REISETILSKUDD
+      #        type:
+      #          type: string
+      #          enum:
+      #            - AKTIVITET_IKKE_MULIG
+      #            - AVVENTENDE,
+      #            - BEHANDLINGSDAGER,
+      #            - GRADERT,
+      #            - REISETILSKUDD
       required:
         - fom
         - tom
