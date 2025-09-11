@@ -40,6 +40,8 @@ components:
       format: date
     CreateResponse:
       type: object
+      allOf:
+        - $ref: '#/components/schemas/Sykmelding'
       properties:
         sykmeldingId:
           type: string

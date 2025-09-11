@@ -1,15 +1,15 @@
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.ktor)
+    alias(libs.plugins.flyway)
 }
 
 group = "no.nav.tsm"
 version = "0.0.1"
 
-val koinVersion = "4.1.0-Beta8"
 
 application {
-    mainClass = "io.ktor.server.netty.EngineMain"
+    mainClass = "no.nav.tsm.ApplicationKt"
 }
 
 repositories {
@@ -26,13 +26,27 @@ dependencies {
     implementation(libs.ktor.server.netty)
     implementation(libs.ktor.server.callid)
     implementation(libs.logback.classic)
-    implementation(libs.ktor.server.config.yaml)
-    implementation("io.ktor:ktor-server-metrics-micrometer:3.2.3")
-    implementation("io.micrometer:micrometer-registry-prometheus:1.6.13")
-    implementation("no.nav.tsm.sykmelding:input:14")
-    implementation("net.logstash.logback:logstash-logback-encoder:8.1")
+    implementation(libs.micrometer.registry.prometheus)
+    implementation(libs.tsm.sykmelding.input)
+    implementation(libs.logback.encoder)
+    implementation(libs.koin.ktor)
+    implementation(libs.koin.logger)
+    implementation(libs.postgres)
+    implementation(libs.flyway.core)
+    implementation(libs.flyway.postgresql)
+
     testImplementation(libs.ktor.server.test.host)
     testImplementation(libs.kotlin.test.junit)
-    implementation("io.insert-koin:koin-ktor3:${koinVersion}")
-    implementation("io.insert-koin:koin-logger-slf4j:${koinVersion}")
+    testImplementation(libs.testcontainers.postgresql)
+    testImplementation(libs.testcontainers.junit.jupiter)
+    testImplementation(libs.mockito.kotlin)
+    testImplementation(libs.mockk)
+    testImplementation(libs.kotlinx.coroutines.test)
+}
+
+tasks {
+    shadowJar {
+        mergeServiceFiles {
+        }
+    }
 }

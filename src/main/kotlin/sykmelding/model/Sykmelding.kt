@@ -10,3 +10,19 @@ data class DollySykmelding(
     val ident: String,
     val aktivitet: Aktivitet,
 )
+
+data class DollySykmeldingResponse(
+    val sykmeldingId: String,
+    val ident: String,
+    val aktivitet: Aktivitet,
+)
+
+data class DollySykmeldingerResponse(
+    val sykmeldinger: List<DollySykmeldingResponse>
+)
+
+
+data class SykmeldingNotFound(
+    private val id: String,
+    val message: String = "Sykmelding not found $id"
+)
