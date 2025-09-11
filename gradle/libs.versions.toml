@@ -3,9 +3,15 @@ kotlin = "2.1.10"
 ktor = "3.2.3"
 logback = "1.5.13"
 logbackEncoder = "8.1"
-flyway = "11.11.2"
+flyway = "11.12.0"
 sykmeldingInput = "15"
 micrometer = "1.6.13"
+koinVersion = "4.1.1"
+postgresVersion = "42.7.7"
+testcontainerVersion = "1.21.3"
+mockkVersion = "1.14.5"
+mockitoVersion = "5.4.0"
+kotlinxCoroutinesTestVersion = "1.10.2"
 [libraries]
 ktor-server-content-negotiation = { module = "io.ktor:ktor-server-content-negotiation", version.ref = "ktor" }
 ktor-server-core = { module = "io.ktor:ktor-server-core", version.ref = "ktor" }
@@ -14,15 +20,25 @@ ktor-server-metrics = { module = "io.ktor:ktor-server-metrics-micrometer", versi
 ktor-server-openapi = { module = "io.ktor:ktor-server-openapi", version.ref = "ktor" }
 ktor-server-netty = { module = "io.ktor:ktor-server-netty", version.ref = "ktor" }
 ktor-server-callid = { module = "io.ktor:ktor-server-call-id", version.ref = "ktor" }
+koin-ktor = { module = "io.insert-koin:koin-ktor", version.ref = "koinVersion" }
+koin-logger = { module = "io.insert-koin:koin-logger-slf4j", version.ref = "koinVersion" }
+logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
+logback-encoder = { module = "net.logstash.logback:logstash-logback-encoder", version.ref = "logbackEncoder"}
+
 micrometer-registry-prometheus = { module = "io.micrometer:micrometer-registry-prometheus", version.ref = "micrometer" }
+postgres = { module = "org.postgresql:postgresql", version.ref = "postgresVersion" }
+flyway-core = { module = "org.flywaydb:flyway-core", version.ref = "flyway" }
+flyway-postgresql = { module = "org.flywaydb:flyway-database-postgresql", version.ref = "flyway" }
 
 tsm-sykmelding-input = { module = "no.nav.tsm.sykmelding:input", version.ref = "sykmeldingInput" }
 
-logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
-logback-encoder = { module = "net.logstash.logback:logstash-logback-encoder", version.ref = "logbackEncoder"}
-ktor-server-config-yaml = { module = "io.ktor:ktor-server-config-yaml", version.ref = "ktor" }
 ktor-server-test-host = { module = "io.ktor:ktor-server-test-host", version.ref = "ktor" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
+testcontainers-postgresql = { module = "org.testcontainers:postgresql", version.ref = "testcontainerVersion" }
+testcontainers-junit-jupiter = { module = "org.testcontainers:junit-jupiter" , version.ref = "testcontainerVersion"}
+mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin" , version.ref = "mockitoVersion"}
+mockk = { module = "io.mockk:mockk" , version.ref = "mockkVersion"}
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test" , version.ref = "kotlinxCoroutinesTestVersion"}
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

@@ -701,6 +701,19 @@
     }
   }
 };
+            defs["CreateResponse"] = {
+  "required" : [ "sykmeldingId" ],
+  "type" : "object",
+  "properties" : {
+    "sykmeldingId" : {
+      "type" : "string",
+      "format" : "uuid"
+    }
+  },
+  "allOf" : [ {
+    "$ref" : "#/components/schemas/Sykmelding"
+  } ]
+};
             defs["Date"] = {
   "type" : "string",
   "format" : "date"
@@ -1013,7 +1026,7 @@ except ApiException as e:
 
 
                           <h2>Responses</h2>
-                            <h3> Status: 200 - Ok </h3>
+                            <h3> Status: 200 -  </h3>
 
                             <ul class="nav nav-tabs nav-tabs-examples" >
                             </ul>

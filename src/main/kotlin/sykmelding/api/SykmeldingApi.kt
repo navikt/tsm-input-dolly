@@ -2,12 +2,14 @@ package no.nav.tsm.sykmelding.api
 
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.request.receive
-import io.ktor.server.routing.Route
 import io.ktor.server.response.respond
+import io.ktor.server.routing.Route
+import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import no.nav.tsm.sykmelding.SykmeldingService
-import no.nav.tsm.sykmelding.model.CreateSykmeldingResponse
 import no.nav.tsm.sykmelding.model.DollySykmelding
+import no.nav.tsm.sykmelding.model.DollySykmeldingResponse
+import no.nav.tsm.sykmelding.model.SykmeldingNotFound
 import no.nav.tsm.utils.logger
 import org.koin.ktor.ext.inject
 import org.slf4j.LoggerFactory
@@ -28,10 +30,46 @@ fun Route.sykmeldingApi() {
             val sykmeldingId = sykmeldingService.opprettSykmelding(sykmelding)
 
             log.info("Opprettet sykmelding med id $sykmeldingId")
-            call.respond(HttpStatusCode.OK, CreateSykmeldingResponse(sykmeldingId))
+            call.respond(
+                HttpStatusCode.OK, DollySykmeldingResponse(
+                    sykmeldingId = sykmeldingId,
+                    ident = sykmelding.ident,
+                    aktivitet = sykmelding.aktivitet
+                )
+            )
         } catch (e: Exception) {
-            log.error("Noe gikk galt ved oppretting av sykmelding", e)
+            logger.error("Noe gikk galt ved oppretting av sykmelding", e)
         }
 
     }
+    get("/sykmelding/{sykmeldingId}") {
+        val sykmeldingId = call.parameters["sykmeldingId"]
+        requireNotNull(sykmeldingId)
+        logger.info("Henter sykmelding med id ${call.parameters["sykmeldingId"]}")
+
+        try {
+            val dollySykmeldingResponse = sykmeldingService.hentSykmelding(sykmeldingId)
+            if (dollySykmeldingResponse == null) {
+                call.respond(HttpStatusCode.NotFound, SykmeldingNotFound(sykmeldingId))
+            } else {
+                call.respond(HttpStatusCode.OK, dollySykmeldingResponse)
+            }
+        } catch (e: Exception) {
+            logger.error("Noe gikk galt ved henting av sykmelding med id $sykmeldingId", e)
+        }
+    }
+
+    get("/sykmelding/ident") {
+        val ident = call.request.headers["X-ident"]
+        requireNotNull(ident)
+        logger.info("Henter sykmeldinger for ident")
+
+        try {
+            val response = sykmeldingService.hentSykmeldingByIdent(ident)
+            call.respond(HttpStatusCode.OK, response)
+        } catch (e: Exception) {
+            logger.error("Noe gikk galt ved henting av sykmeldinger for ident", e)
+        }
+    }
 }
+

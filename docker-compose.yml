@@ -1,4 +1,14 @@
 services:
+  postgres:
+    image: postgres:17
+    container_name: tsm-input-dolly-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: app
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pw
+
   kafka:
     image: bitnami/kafka:latest
     container_name: tsm-input-dolly-kafka
