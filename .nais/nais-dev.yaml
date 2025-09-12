@@ -41,3 +41,9 @@ spec:
     autoInstrumentation:
       enabled: true
       runtime: java
+  accessPolicy:
+    inbound:
+      rules:
+        - application: teamsykmelding-mock
+          namespace: teamsykmelding
+          cluster: dev-gcp
