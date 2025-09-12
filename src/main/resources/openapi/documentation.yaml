@@ -4,9 +4,9 @@ info:
   description: "Application API"
   version: "1.0.0"
 servers:
-  - url: "http://0.0.0.0:8080"
+  - url: "http://0.0.0.0:8080/api"
 paths:
-  /sykmelding:
+  /api/sykmelding:
     post:
       operationId: opprettSykmelding
       tags:
@@ -16,9 +16,44 @@ paths:
         $ref: '#/components/requestBodies/SykmeldingBody'
       responses:
         '200':
-          $ref: '#/components/responses/CreateSykmeldingResponse'
+          $ref: '#/components/responses/SykmeldingResponse'
         '500':
           description: Internal server error
+  /api/sykmelding/{sykmeldingId}:
+    parameters:
+      - name: sykmeldingId
+        in: path
+        required: true
+        schema:
+          type: string
+        description: SykmeldingId
+    get:
+      operationId: getSykmeldingById
+      summary: Get sykmelding by id
+      responses:
+        '200':
+          $ref: '#/components/responses/SykmeldingResponse'
+        '404':
+          $ref: '#/components/responses/ErrorResponse'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+  /api/sykmelding/ident:
+    parameters:
+      - name: X-ident
+        in: header
+        required: true
+        schema:
+          type: string
+        description: Ident
+    get:
+      operationId: getSykmeldingerByIdent
+      summary: Get sykmeldinger by ident (FNR or DNR)
+      responses:
+        '200':
+          $ref: '#/components/responses/SykmeldingerResponse'
+        '500':
+          description: Internal server error
+
 components:
   requestBodies:
     SykmeldingBody:
@@ -28,35 +63,61 @@ components:
           schema:
             $ref: '#/components/schemas/Sykmelding'
   responses:
-    CreateSykmeldingResponse:
+    ErrorResponse:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/CreateResponse'
+            $ref: '#/components/schemas/NotFoundResponse'
+      description: "Sykmelding not found"
+    SykmeldingResponse:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SykmeldingResponse'
       description: "Response with sykmeldingId"
+    SykmeldingerResponse:
+      description: "List of sykmeldinger"
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SykmeldingerResponse'
   schemas:
+    NotFoundResponse:
+      type: object
+      properties:
+        message:
+          type: string
     Date:
       type: string
       format: date
-    CreateResponse:
+    SykmeldingId:
+      type: string
+    Ident:
+      type: string
+      pattern: "^[0-9]{11}$"
+      example: "62858801562"
+      description: "FNR eller DNR"
+    SykmeldingResponse:
       type: object
-      allOf:
-        - $ref: '#/components/schemas/Sykmelding'
       properties:
         sykmeldingId:
-          type: string
-          format: uuid
-      required:
-        - sykmeldingId
+          $ref: '#/components/schemas/SykmeldingId'
+        aktivitet:
+          $ref: '#/components/schemas/Aktivitet'
+        ident:
+          $ref: '#/components/schemas/Ident'
+    SykmeldingerResponse:
+      type: object
+      properties:
+        sykmeldinger:
+          type: array
+          items:
+            $ref: '#/components/schemas/SykmeldingResponse'
     Sykmelding:
       type: object
       properties:
         ident:
-          type: string
-          minLength: 11
-          maxLength: 11
-          example: "62858801562"
-          description: "FNR eller DNR"
+          $ref: '#/components/schemas/Ident'
         aktivitet:
           $ref: '#/components/schemas/Aktivitet'
       required:

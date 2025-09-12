@@ -9,6 +9,7 @@ import io.ktor.server.routing.post
 import no.nav.tsm.sykmelding.SykmeldingService
 import no.nav.tsm.sykmelding.model.DollySykmelding
 import no.nav.tsm.sykmelding.model.DollySykmeldingResponse
+import no.nav.tsm.sykmelding.model.InternalServerError
 import no.nav.tsm.sykmelding.model.SykmeldingNotFound
 import no.nav.tsm.utils.logger
 import org.koin.ktor.ext.inject
@@ -56,6 +57,7 @@ fun Route.sykmeldingApi() {
             }
         } catch (e: Exception) {
             logger.error("Noe gikk galt ved henting av sykmelding med id $sykmeldingId", e)
+            call.respond(HttpStatusCode.InternalServerError, InternalServerError(sykmeldingId))
         }
     }
 

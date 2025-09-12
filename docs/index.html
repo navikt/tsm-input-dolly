@@ -701,36 +701,61 @@
     }
   }
 };
-            defs["CreateResponse"] = {
-  "required" : [ "sykmeldingId" ],
-  "type" : "object",
-  "properties" : {
-    "sykmeldingId" : {
-      "type" : "string",
-      "format" : "uuid"
-    }
-  },
-  "allOf" : [ {
-    "$ref" : "#/components/schemas/Sykmelding"
-  } ]
-};
             defs["Date"] = {
   "type" : "string",
   "format" : "date"
+};
+            defs["Ident"] = {
+  "pattern" : "^[0-9]{11}$",
+  "type" : "string",
+  "description" : "FNR eller DNR",
+  "example" : "62858801562"
+};
+            defs["NotFoundResponse"] = {
+  "type" : "object",
+  "properties" : {
+    "message" : {
+      "type" : "string"
+    }
+  }
 };
             defs["Sykmelding"] = {
   "required" : [ "aktivitet", "ident" ],
   "type" : "object",
   "properties" : {
     "ident" : {
-      "maxLength" : 11,
-      "minLength" : 11,
-      "type" : "string",
-      "description" : "FNR eller DNR",
-      "example" : "62858801562"
+      "$ref" : "#/components/schemas/Ident"
     },
     "aktivitet" : {
       "$ref" : "#/components/schemas/Aktivitet"
+    }
+  }
+};
+            defs["SykmeldingId"] = {
+  "type" : "string"
+};
+            defs["SykmeldingResponse"] = {
+  "type" : "object",
+  "properties" : {
+    "sykmeldingId" : {
+      "$ref" : "#/components/schemas/SykmeldingId"
+    },
+    "aktivitet" : {
+      "$ref" : "#/components/schemas/Aktivitet"
+    },
+    "ident" : {
+      "$ref" : "#/components/schemas/Ident"
+    }
+  }
+};
+            defs["SykmeldingerResponse"] = {
+  "type" : "object",
+  "properties" : {
+    "sykmeldinger" : {
+      "type" : "array",
+      "items" : {
+        "$ref" : "#/components/schemas/SykmeldingResponse"
+      }
     }
   }
 };
@@ -750,6 +775,13 @@
             -->
             <li class="nav-fixed nav-header active" data-group="_"><a href="#api-_">API Summary</a></li>
 
+                  <li class="nav-header" data-group="Default"><a href="#api-Default">API Methods - Default</a></li>
+                    <li data-group="Default" data-name="getSykmeldingById" class="">
+                      <a href="#api-Default-getSykmeldingById">getSykmeldingById</a>
+                    </li>
+                    <li data-group="Default" data-name="getSykmeldingerByIdent" class="">
+                      <a href="#api-Default-getSykmeldingerByIdent">getSykmeldingerByIdent</a>
+                    </li>
                   <li class="nav-header" data-group="Sykmelding"><a href="#api-Sykmelding">API Methods - Sykmelding</a></li>
                     <li data-group="Sykmelding" data-name="opprettSykmelding" class="">
                       <a href="#api-Sykmelding-opprettSykmelding">opprettSykmelding</a>
@@ -773,6 +805,449 @@
           </div>
         </div>
         <div id="sections">
+                <section id="api-Default">
+                  <h1>Default</h1>
+                    <div id="api-Default-getSykmeldingById">
+                      <article id="api-Default-getSykmeldingById-0" data-group="User" data-name="getSykmeldingById" data-version="0">
+                        <div class="pull-left">
+                          <h1>getSykmeldingById</h1>
+                          <p>Get sykmelding by id</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked"></p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="get"><code><span class="pln">/api/sykmelding/{sykmeldingId}</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-Default-getSykmeldingById-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Default-getSykmeldingById-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Default-getSykmeldingById-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Default-getSykmeldingById-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Default-getSykmeldingById-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Default-getSykmeldingById-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Default-getSykmeldingById-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Default-getSykmeldingById-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Default-getSykmeldingById-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Default-getSykmeldingById-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Default-getSykmeldingById-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-Default-getSykmeldingById-0-curl">
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+"http://0.0.0.0:8080/api/api/sykmelding/{sykmeldingId}"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-Default-getSykmeldingById-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.DefaultApi;
+
+import java.io.File;
+import java.util.*;
+
+public class DefaultApiExample {
+
+    public static void main(String[] args) {
+        
+        DefaultApi apiInstance = new DefaultApi();
+        try {
+            apiInstance.getSykmeldingById();
+        } catch (ApiException e) {
+            System.err.println("Exception when calling DefaultApi#getSykmeldingById");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Default-getSykmeldingById-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.DefaultApi;
+
+public class DefaultApiExample {
+
+    public static void main(String[] args) {
+        DefaultApi apiInstance = new DefaultApi();
+        try {
+            apiInstance.getSykmeldingById();
+        } catch (ApiException e) {
+            System.err.println("Exception when calling DefaultApi#getSykmeldingById");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-Default-getSykmeldingById-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-Default-getSykmeldingById-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">
+DefaultApi *apiInstance = [[DefaultApi alloc] init];
+
+// Get sykmelding by id
+[apiInstance getSykmeldingByIdWithCompletionHandler: 
+              ^(NSError* error) {
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Default-getSykmeldingById-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var ApplicationApi = require('application_api');
+
+var api = new ApplicationApi.DefaultApi()
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully.');
+  }
+};
+api.getSykmeldingById(callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-Default-getSykmeldingById-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-Default-getSykmeldingById-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class getSykmeldingByIdExample
+    {
+        public void main()
+        {
+
+            var apiInstance = new DefaultApi();
+
+            try
+            {
+                // Get sykmelding by id
+                apiInstance.getSykmeldingById();
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling DefaultApi.getSykmeldingById: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Default-getSykmeldingById-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+$api_instance = new Swagger\Client\ApiDefaultApi();
+
+try {
+    $api_instance->getSykmeldingById();
+} catch (Exception $e) {
+    echo 'Exception when calling DefaultApi->getSykmeldingById: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Default-getSykmeldingById-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::DefaultApi;
+
+my $api_instance = WWW::SwaggerClient::DefaultApi->new();
+
+eval { 
+    $api_instance->getSykmeldingById();
+};
+if ($@) {
+    warn "Exception when calling DefaultApi->getSykmeldingById: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Default-getSykmeldingById-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# create an instance of the API class
+api_instance = swagger_client.DefaultApi()
+
+try: 
+    # Get sykmelding by id
+    api_instance.get_sykmelding_by_id()
+except ApiException as e:
+    print("Exception when calling DefaultApi->getSykmeldingById: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+
+
+
+
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 -  </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                            <h3> Status: 404 -  </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                            <h3> Status: 500 -  </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
+                    <div id="api-Default-getSykmeldingerByIdent">
+                      <article id="api-Default-getSykmeldingerByIdent-0" data-group="User" data-name="getSykmeldingerByIdent" data-version="0">
+                        <div class="pull-left">
+                          <h1>getSykmeldingerByIdent</h1>
+                          <p>Get sykmeldinger by ident (FNR or DNR)</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked"></p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="get"><code><span class="pln">/api/sykmelding/ident</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-Default-getSykmeldingerByIdent-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Default-getSykmeldingerByIdent-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Default-getSykmeldingerByIdent-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Default-getSykmeldingerByIdent-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Default-getSykmeldingerByIdent-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Default-getSykmeldingerByIdent-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Default-getSykmeldingerByIdent-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Default-getSykmeldingerByIdent-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Default-getSykmeldingerByIdent-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Default-getSykmeldingerByIdent-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Default-getSykmeldingerByIdent-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-Default-getSykmeldingerByIdent-0-curl">
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+"http://0.0.0.0:8080/api/api/sykmelding/ident"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-Default-getSykmeldingerByIdent-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.DefaultApi;
+
+import java.io.File;
+import java.util.*;
+
+public class DefaultApiExample {
+
+    public static void main(String[] args) {
+        
+        DefaultApi apiInstance = new DefaultApi();
+        try {
+            apiInstance.getSykmeldingerByIdent();
+        } catch (ApiException e) {
+            System.err.println("Exception when calling DefaultApi#getSykmeldingerByIdent");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Default-getSykmeldingerByIdent-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.DefaultApi;
+
+public class DefaultApiExample {
+
+    public static void main(String[] args) {
+        DefaultApi apiInstance = new DefaultApi();
+        try {
+            apiInstance.getSykmeldingerByIdent();
+        } catch (ApiException e) {
+            System.err.println("Exception when calling DefaultApi#getSykmeldingerByIdent");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-Default-getSykmeldingerByIdent-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-Default-getSykmeldingerByIdent-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">
+DefaultApi *apiInstance = [[DefaultApi alloc] init];
+
+// Get sykmeldinger by ident (FNR or DNR)
+[apiInstance getSykmeldingerByIdentWithCompletionHandler: 
+              ^(NSError* error) {
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Default-getSykmeldingerByIdent-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var ApplicationApi = require('application_api');
+
+var api = new ApplicationApi.DefaultApi()
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully.');
+  }
+};
+api.getSykmeldingerByIdent(callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-Default-getSykmeldingerByIdent-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-Default-getSykmeldingerByIdent-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class getSykmeldingerByIdentExample
+    {
+        public void main()
+        {
+
+            var apiInstance = new DefaultApi();
+
+            try
+            {
+                // Get sykmeldinger by ident (FNR or DNR)
+                apiInstance.getSykmeldingerByIdent();
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling DefaultApi.getSykmeldingerByIdent: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Default-getSykmeldingerByIdent-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+$api_instance = new Swagger\Client\ApiDefaultApi();
+
+try {
+    $api_instance->getSykmeldingerByIdent();
+} catch (Exception $e) {
+    echo 'Exception when calling DefaultApi->getSykmeldingerByIdent: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Default-getSykmeldingerByIdent-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::DefaultApi;
+
+my $api_instance = WWW::SwaggerClient::DefaultApi->new();
+
+eval { 
+    $api_instance->getSykmeldingerByIdent();
+};
+if ($@) {
+    warn "Exception when calling DefaultApi->getSykmeldingerByIdent: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Default-getSykmeldingerByIdent-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# create an instance of the API class
+api_instance = swagger_client.DefaultApi()
+
+try: 
+    # Get sykmeldinger by ident (FNR or DNR)
+    api_instance.get_sykmeldinger_by_ident()
+except ApiException as e:
+    print("Exception when calling DefaultApi->getSykmeldingerByIdent: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+
+
+
+
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 -  </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                            <h3> Status: 500 - Internal server error </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
+                  </section>
                 <section id="api-Sykmelding">
                   <h1>Sykmelding</h1>
                     <div id="api-Sykmelding-opprettSykmelding">
@@ -787,7 +1262,7 @@
                         <p class="marked"></p>
                         <p></p>
                         <br />
-                        <pre class="prettyprint language-html prettyprinted" data-type="post"><code><span class="pln">/sykmelding</span></code></pre>
+                        <pre class="prettyprint language-html prettyprinted" data-type="post"><code><span class="pln">/api/sykmelding</span></code></pre>
                         <p>
                           <h3>Usage and SDK Samples</h3>
                         </p>
@@ -809,7 +1284,7 @@
                           <div class="tab-pane active" id="examples-Sykmelding-opprettSykmelding-0-curl">
                            <pre class="prettyprint"><code class="language-bsh">curl -X POST\
 -H "Content-Type: application/json"\
-"http://0.0.0.0:8080/sykmelding"</code></pre>
+"http://0.0.0.0:8080/api/api/sykmelding"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Sykmelding-opprettSykmelding-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;

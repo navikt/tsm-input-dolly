@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.ktor)
     alias(libs.plugins.flyway)
+
 }
 
 group = "no.nav.tsm"
@@ -36,17 +37,22 @@ dependencies {
     implementation(libs.flyway.postgresql)
 
     testImplementation(libs.ktor.server.test.host)
-    testImplementation(libs.kotlin.test.junit)
+    testImplementation(libs.kotlin.test)
     testImplementation(libs.testcontainers.postgresql)
     testImplementation(libs.testcontainers.junit.jupiter)
     testImplementation(libs.mockito.kotlin)
     testImplementation(libs.mockk)
     testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.hamcrest)
+    testImplementation(libs.rest.assured)
+    testImplementation(libs.swagger.request.validator.rest.assured)
 }
-
 tasks {
     shadowJar {
         mergeServiceFiles {
         }
+    }
+    test {
+        useJUnitPlatform()
     }
 }
