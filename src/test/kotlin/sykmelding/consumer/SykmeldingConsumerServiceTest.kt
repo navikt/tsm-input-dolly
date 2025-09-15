@@ -47,15 +47,8 @@ class SykmeldingConsumerServiceTest {
         val sykmeldingRecord = mapToSykmeldingRecord(sykmeldingId, dollySykmelding)
         val json = objectMapper.writeValueAsBytes(sykmeldingRecord)
 
-        val consumerRecord = ConsumerRecord(
-            "tsm.sykmeldinger",
-            0,
-            0L,
-            sykmeldingId,
-            json
-        )
 
-        runConsumer(consumerRecord)
+        runConsumer(sykmeldingId, json)
 
         verify { consumer.subscribe(listOf("tsm.sykmeldinger")) }
         coVerify { repository.saveSykmelding(sykmeldingId, ident, any()) }
@@ -66,15 +59,7 @@ class SykmeldingConsumerServiceTest {
         val sykmeldingId = UUID.randomUUID().toString()
         val invalidJson: ByteArray? = null
 
-        val consumerRecord = ConsumerRecord<String, ByteArray>(
-            "tsm.sykmeldinger",
-            0,
-            0L,
-            sykmeldingId,
-            invalidJson
-        )
-
-        runConsumer(consumerRecord)
+        runConsumer(sykmeldingId, invalidJson)
 
 
         verify { consumer.subscribe(listOf("tsm.sykmeldinger")) }
@@ -88,15 +73,7 @@ class SykmeldingConsumerServiceTest {
         val sykmeldingId = UUID.randomUUID().toString()
         val invalidJson: ByteArray = "null".toByteArray()
 
-        val consumerRecord = ConsumerRecord(
-            "tsm.sykmeldinger",
-            0,
-            0L,
-            sykmeldingId,
-            invalidJson
-        )
-
-        runConsumer(consumerRecord)
+        runConsumer(sykmeldingId, invalidJson)
 
 
         verify { consumer.subscribe(listOf("tsm.sykmeldinger")) }
@@ -110,19 +87,19 @@ class SykmeldingConsumerServiceTest {
         val sykmeldingId = UUID.randomUUID().toString()
         val invalidJson = "{sykmelding: sykmelding}".toByteArray()
 
-        val consumerRecord = ConsumerRecord(
-            "tsm.sykmeldinger",
-            0,
-            0L,
-            sykmeldingId,
-            invalidJson
-        )
-
-        runConsumer(consumerRecord)
-
+        runConsumer(sykmeldingId, invalidJson)
 
         verify { consumer.subscribe(listOf("tsm.sykmeldinger")) }
         coVerify { repository.saveCorruptData(sykmeldingId, invalidJson) }
+    }
+
+    @Test
+    fun `delete sykmelding`() = runTest {
+        val sykmeldingId = UUID.randomUUID().toString()
+
+        runConsumer(sykmeldingId, null)
+
+        coVerify(exactly = 1) { repository.deleteBySykmeldingId(sykmeldingId) }
     }
 
     private fun createTestDollySykmelding(ident: String): DollySykmelding {
@@ -136,7 +113,15 @@ class SykmeldingConsumerServiceTest {
     }
 
 
-    private suspend fun TestScope.runConsumer(consumerRecord: ConsumerRecord<String, ByteArray>) {
+    private suspend fun TestScope.runConsumer(sykmeldingId: String, value: ByteArray?) {
+
+        val consumerRecord = ConsumerRecord<String, ByteArray?>(
+            "tsm.sykmeldinger",
+            0,
+            0L,
+            sykmeldingId,
+            value
+        )
         val consumerRecords = ConsumerRecords(
             mapOf(TopicPartition("tsm.sykmeldinger", 0) to listOf(consumerRecord)), mapOf()
         )

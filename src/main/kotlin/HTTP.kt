@@ -4,6 +4,7 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.plugins.callid.*
 import io.ktor.server.plugins.openapi.*
+import io.ktor.server.plugins.swagger.swaggerUI
 import io.ktor.server.routing.*
 
 fun Application.configureHTTP() {
@@ -13,5 +14,6 @@ fun Application.configureHTTP() {
 
     routing {
         openAPI(path = "openapi", swaggerFile = "openapi/documentation.yaml")
+        swaggerUI(path = "swagger-ui", swaggerFile = "openapi/documentation.yaml")
     }
 }

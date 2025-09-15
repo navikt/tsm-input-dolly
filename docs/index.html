@@ -782,6 +782,9 @@
             <li class="nav-fixed nav-header active" data-group="_"><a href="#api-_">API Summary</a></li>
 
                   <li class="nav-header" data-group="Default"><a href="#api-Default">API Methods - Default</a></li>
+                    <li data-group="Default" data-name="deleteSykmeldingerByIdent" class="">
+                      <a href="#api-Default-deleteSykmeldingerByIdent">deleteSykmeldingerByIdent</a>
+                    </li>
                     <li data-group="Default" data-name="getSykmeldingById" class="">
                       <a href="#api-Default-getSykmeldingById">getSykmeldingById</a>
                     </li>
@@ -813,6 +816,260 @@
         <div id="sections">
                 <section id="api-Default">
                   <h1>Default</h1>
+                    <div id="api-Default-deleteSykmeldingerByIdent">
+                      <article id="api-Default-deleteSykmeldingerByIdent-0" data-group="User" data-name="deleteSykmeldingerByIdent" data-version="0">
+                        <div class="pull-left">
+                          <h1>deleteSykmeldingerByIdent</h1>
+                          <p>Delete sykmeldinger by ident (FNR or DNR)</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked"></p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="delete"><code><span class="pln">/api/sykmelding/ident</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-Default-deleteSykmeldingerByIdent-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Default-deleteSykmeldingerByIdent-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Default-deleteSykmeldingerByIdent-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Default-deleteSykmeldingerByIdent-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Default-deleteSykmeldingerByIdent-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Default-deleteSykmeldingerByIdent-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Default-deleteSykmeldingerByIdent-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Default-deleteSykmeldingerByIdent-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Default-deleteSykmeldingerByIdent-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Default-deleteSykmeldingerByIdent-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Default-deleteSykmeldingerByIdent-0-python">Python</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-Default-deleteSykmeldingerByIdent-0-curl">
+                           <pre class="prettyprint"><code class="language-bsh">curl -X DELETE\
+"https://tsm-input-dolly.intern.dev.nav.no/api/sykmelding/ident"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-Default-deleteSykmeldingerByIdent-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.DefaultApi;
+
+import java.io.File;
+import java.util.*;
+
+public class DefaultApiExample {
+
+    public static void main(String[] args) {
+        
+        DefaultApi apiInstance = new DefaultApi();
+        Ident xIdent = ; // Ident | Ident
+        try {
+            apiInstance.deleteSykmeldingerByIdent(xIdent);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling DefaultApi#deleteSykmeldingerByIdent");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Default-deleteSykmeldingerByIdent-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.DefaultApi;
+
+public class DefaultApiExample {
+
+    public static void main(String[] args) {
+        DefaultApi apiInstance = new DefaultApi();
+        Ident xIdent = ; // Ident | Ident
+        try {
+            apiInstance.deleteSykmeldingerByIdent(xIdent);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling DefaultApi#deleteSykmeldingerByIdent");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-Default-deleteSykmeldingerByIdent-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-Default-deleteSykmeldingerByIdent-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">Ident *xIdent = ; // Ident
+
+DefaultApi *apiInstance = [[DefaultApi alloc] init];
+
+// Delete sykmeldinger by ident (FNR or DNR)
+[apiInstance deleteSykmeldingerByIdentWith:xIdent
+              completionHandler: ^(NSError* error) {
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Default-deleteSykmeldingerByIdent-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var ApplicationApi = require('application_api');
+
+var api = new ApplicationApi.DefaultApi()
+var xIdent = ; // {{Ident}} Ident
+
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully.');
+  }
+};
+api.deleteSykmeldingerByIdent(xIdent, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-Default-deleteSykmeldingerByIdent-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-Default-deleteSykmeldingerByIdent-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class deleteSykmeldingerByIdentExample
+    {
+        public void main()
+        {
+
+            var apiInstance = new DefaultApi();
+            var xIdent = new Ident(); // Ident | Ident
+
+            try
+            {
+                // Delete sykmeldinger by ident (FNR or DNR)
+                apiInstance.deleteSykmeldingerByIdent(xIdent);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling DefaultApi.deleteSykmeldingerByIdent: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Default-deleteSykmeldingerByIdent-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+$api_instance = new Swagger\Client\ApiDefaultApi();
+$xIdent = ; // Ident | Ident
+
+try {
+    $api_instance->deleteSykmeldingerByIdent($xIdent);
+} catch (Exception $e) {
+    echo 'Exception when calling DefaultApi->deleteSykmeldingerByIdent: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Default-deleteSykmeldingerByIdent-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::DefaultApi;
+
+my $api_instance = WWW::SwaggerClient::DefaultApi->new();
+my $xIdent = ; # Ident | Ident
+
+eval { 
+    $api_instance->deleteSykmeldingerByIdent(xIdent => $xIdent);
+};
+if ($@) {
+    warn "Exception when calling DefaultApi->deleteSykmeldingerByIdent: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Default-deleteSykmeldingerByIdent-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# create an instance of the API class
+api_instance = swagger_client.DefaultApi()
+xIdent =  # Ident | Ident
+
+try: 
+    # Delete sykmeldinger by ident (FNR or DNR)
+    api_instance.delete_sykmeldinger_by_ident(xIdent)
+except ApiException as e:
+    print("Exception when calling DefaultApi->deleteSykmeldingerByIdent: %s\n" % e)</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Parameters</h2>
+
+
+                            <div class="methodsubtabletitle">Header parameters</div>
+                            <table id="methodsubtable">
+                              <tr>
+                                <th width="150px">Name</th>
+                                <th>Description</th>
+                              </tr>
+                                  <tr><td style="width:150px;">X-ident*</td>
+                                  <td>
+                                  
+                                  
+                                      <div id="d2e199_deleteSykmeldingerByIdent_xIdent">
+                                          <div class="json-schema-view">
+                                              <div class="primitive">
+                                                  <span class="type">
+                                                      Ident
+                                                  </span>
+                                  
+                                                      <div class="inner description">
+                                                          Ident
+                                                      </div>
+                                              </div>
+                                                  <div class="inner required">
+                                                      Required
+                                                  </div>
+                                          </div>
+                                      </div>
+                                  </td>
+                                  </tr>
+                            </table>
+
+
+
+
+                          <h2>Responses</h2>
+                            <h3> Status: 200 - OK </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                            <h3> Status: 500 -  </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples" >
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                        </article>
+                      </div>
+                      <hr>
                     <div id="api-Default-getSykmeldingById">
                       <article id="api-Default-getSykmeldingById-0" data-group="User" data-name="getSykmeldingById" data-version="0">
                         <div class="pull-left">
@@ -846,7 +1103,7 @@
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Default-getSykmeldingById-0-curl">
                            <pre class="prettyprint"><code class="language-bsh">curl -X GET\
-"http://tsm-input-dolly.tsm/api/sykmelding/{sykmeldingId}"</code></pre>
+"https://tsm-input-dolly.intern.dev.nav.no/api/sykmelding/{sykmeldingId}"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Default-getSykmeldingById-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -1070,7 +1327,7 @@ except ApiException as e:
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Default-getSykmeldingerByIdent-0-curl">
                            <pre class="prettyprint"><code class="language-bsh">curl -X GET\
-"http://tsm-input-dolly.tsm/api/sykmelding/ident"</code></pre>
+"https://tsm-input-dolly.intern.dev.nav.no/api/sykmelding/ident"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Default-getSykmeldingerByIdent-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -1290,7 +1547,7 @@ except ApiException as e:
                           <div class="tab-pane active" id="examples-Sykmelding-opprettSykmelding-0-curl">
                            <pre class="prettyprint"><code class="language-bsh">curl -X POST\
 -H "Content-Type: application/json"\
-"http://tsm-input-dolly.tsm/api/sykmelding"</code></pre>
+"https://tsm-input-dolly.intern.dev.nav.no/api/sykmelding"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Sykmelding-opprettSykmelding-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;

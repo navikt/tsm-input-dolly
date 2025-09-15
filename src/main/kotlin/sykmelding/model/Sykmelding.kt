@@ -28,6 +28,5 @@ data class SykmeldingNotFound(
 )
 
 data class InternalServerError(
-    private val id: String,
-    val message: String = "Error while getting sykmelding with id: $id"
+    val message: String
 )

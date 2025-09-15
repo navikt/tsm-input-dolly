@@ -4,6 +4,7 @@ info:
   description: "Application API"
   version: "1.0.0"
 servers:
+  - url: "https://tsm-input-dolly.intern.dev.nav.no"
   - url: "http://tsm-input-dolly.tsm"
 paths:
   /api/sykmelding:
@@ -43,7 +44,7 @@ paths:
         in: header
         required: true
         schema:
-          type: string
+          $ref: '#/components/schemas/Ident'
         description: Ident
     get:
       operationId: getSykmeldingerByIdent
@@ -53,6 +54,21 @@ paths:
           $ref: '#/components/responses/SykmeldingerResponse'
         '500':
           description: Internal server error
+    delete:
+      parameters:
+        - name: X-ident
+          in: header
+          required: true
+          schema:
+            $ref: '#/components/schemas/Ident'
+          description: Ident
+      operationId: deleteSykmeldingerByIdent
+      summary: Delete sykmeldinger by ident (FNR or DNR)
+      responses:
+        '200':
+          description: OK
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
 
 components:
   requestBodies:

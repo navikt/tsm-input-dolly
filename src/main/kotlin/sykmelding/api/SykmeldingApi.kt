@@ -4,6 +4,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
+import io.ktor.server.routing.delete
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import no.nav.tsm.sykmelding.SykmeldingService
@@ -57,7 +58,7 @@ fun Route.sykmeldingApi() {
             }
         } catch (e: Exception) {
             logger.error("Noe gikk galt ved henting av sykmelding med id $sykmeldingId", e)
-            call.respond(HttpStatusCode.InternalServerError, InternalServerError(sykmeldingId))
+            call.respond(HttpStatusCode.InternalServerError, InternalServerError("Error while getting sykmelding with id: $sykmeldingId"))
         }
     }
 
@@ -72,6 +73,20 @@ fun Route.sykmeldingApi() {
         } catch (e: Exception) {
             logger.error("Noe gikk galt ved henting av sykmeldinger for ident", e)
         }
+    }
+    delete("/sykmelding/ident") {
+        val ident = call.request.headers["X-ident"]
+        requireNotNull(ident)
+        logger.info("Sletter alle sykmeldinger for ident")
+
+        try {
+            sykmeldingService.deleteSykmeldingerForIdent(ident)
+            call.respond(HttpStatusCode.OK)
+        } catch (e: Exception) {
+            logger.error("Noe gikk galt ved sletting av sykmeldinger for ident", e)
+            call.respond(HttpStatusCode.InternalServerError, InternalServerError("Error while deleting sykmelding for ident"))
+        }
+
     }
 }
 

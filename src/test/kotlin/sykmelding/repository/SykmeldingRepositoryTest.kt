@@ -55,6 +55,22 @@ class SykmeldingRepositoryTest {
     }
 
     @Test
+    fun `should delete sykmelding`() = runTest {
+        val sykmeldingId = UUID.randomUUID().toString()
+        val ident = "12345678901"
+        val dollySykmelding = createTestDollySykmelding(ident)
+        val sykmeldingRecord = mapToSykmeldingRecord(sykmeldingId, dollySykmelding)
+
+        repository.saveSykmelding(sykmeldingId, ident, sykmeldingRecord)
+        val retrieved = repository.getById(sykmeldingId)
+
+        assertNotNull(retrieved)
+        repository.deleteBySykmeldingId(sykmeldingId)
+        val deleted = repository.getById(sykmeldingId)
+        assertNull(deleted)
+    }
+
+    @Test
     fun `should save and retrieve sykmelding by id`() = runTest {
         val sykmeldingId = UUID.randomUUID().toString()
         val ident = "12345678901"

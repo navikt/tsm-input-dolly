@@ -24,6 +24,7 @@ dependencies {
     implementation(libs.ktor.serialization.jackson)
     implementation(libs.ktor.server.metrics)
     implementation(libs.ktor.server.openapi)
+    implementation(libs.ktor.server.swagger.ui)
     implementation(libs.ktor.server.netty)
     implementation(libs.ktor.server.callid)
     implementation(libs.logback.classic)

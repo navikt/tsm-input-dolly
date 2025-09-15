@@ -48,4 +48,13 @@ class SykmeldingService(private val sykmeldingProducer: SykmeldingInputProducer,
         }
         return DollySykmeldingerResponse(sykmeldinger)
     }
+
+    suspend fun deleteSykmeldingerForIdent(ident: String) {
+        val sykmeldinger = sykmeldingRepository.getByIdent(ident).map { it.sykmelding.id }
+        withContext(Dispatchers.IO) {
+            sykmeldinger.forEach { sykmeldingId ->
+                sykmeldingProducer.tombstoneSykmelding(sykmeldingId)
+            }
+        }
+    }
 }

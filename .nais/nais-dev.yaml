@@ -37,6 +37,9 @@ spec:
       memory: 128Mi
   kafka:
     pool: nav-dev
+  ingresses:
+    - "https://tsm-input-dolly.intern.dev.nav.no/openapi"
+    - "https://tsm-input-dolly.intern.dev.nav.no/swagger-ui"
   observability:
     autoInstrumentation:
       enabled: true

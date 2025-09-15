@@ -158,7 +158,6 @@ class OpenApiTest {
 
     }
 
-
     @Test
     fun `Test POST sykmelding 200`() {
         val sykmeldingId = "123"
@@ -192,6 +191,32 @@ class OpenApiTest {
         }
         Assert.assertEquals(dollySykmeldingResponse, result)
 
+    }
+
+    @Test
+    fun `delete sykmelding`() {
+        val ident = "12345678912"
+        coEvery { sykmeldingService.deleteSykmeldingerForIdent(any()) } returns Unit
+        RestAssured
+            .given()
+            .filter(filter)
+            .header("X-ident", ident)
+            .delete("/api/sykmelding/ident")
+            .then()
+            .statusCode(200)
+    }
+
+    @Test
+    fun `delete sykmelding 500 error`() {
+        val ident = "12345678912"
+        coEvery { sykmeldingService.deleteSykmeldingerForIdent(any()) } throws RuntimeException("Test exception")
+        RestAssured
+            .given()
+            .filter(filter)
+            .header("X-ident", ident)
+            .delete("/api/sykmelding/ident")
+            .then()
+            .statusCode(500)
     }
 }
 
