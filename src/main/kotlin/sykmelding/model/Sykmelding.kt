@@ -8,13 +8,13 @@ data class Aktivitet(
 
 data class DollySykmelding(
     val ident: String,
-    val aktivitet: Aktivitet,
+    val aktivitet: List<Aktivitet>,
 )
 
 data class DollySykmeldingResponse(
     val sykmeldingId: String,
     val ident: String,
-    val aktivitet: Aktivitet,
+    val aktivitet: List<Aktivitet>,
 )
 
 data class DollySykmeldingerResponse(

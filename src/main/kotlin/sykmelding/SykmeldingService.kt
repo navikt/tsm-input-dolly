@@ -34,10 +34,12 @@ class SykmeldingService(private val sykmeldingProducer: SykmeldingInputProducer,
     private fun toDollySykmelding(sykmeldingRecord: SykmeldingRecord): DollySykmeldingResponse = DollySykmeldingResponse(
         sykmeldingId = sykmeldingRecord.sykmelding.id,
         ident = sykmeldingRecord.sykmelding.pasient.fnr,
-        aktivitet = Aktivitet(
-            fom = sykmeldingRecord.sykmelding.aktivitet.first().fom,
-            tom = sykmeldingRecord.sykmelding.aktivitet.first().tom
-        )
+        aktivitet = sykmeldingRecord.sykmelding.aktivitet.map {
+            Aktivitet(
+                fom = it.fom,
+                tom = it.tom
+            )
+        }
     )
 
     suspend fun hentSykmeldingByIdent(ident: String): DollySykmeldingerResponse {

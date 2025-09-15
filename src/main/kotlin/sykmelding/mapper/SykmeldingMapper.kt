@@ -45,14 +45,14 @@ fun mapToSykmeldingRecord(sykmeldingId: String, sykmelding: DollySykmelding): Sy
                 svangerskap = false,
                 skjermetForPasient = false,
             ),
-            aktivitet = listOf(
+            aktivitet = sykmelding.aktivitet.map {
                 AktivitetIkkeMulig(
-                    fom = sykmelding.aktivitet.fom,
-                    tom = sykmelding.aktivitet.tom,
+                    fom = it.fom,
+                    tom = it.tom,
                     medisinskArsak = null,
-                    arbeidsrelatertArsak = null
+                    arbeidsrelatertArsak = null,
                 )
-            ),
+            },
             behandler = Behandler(
                 navn = Navn(fornavn = "Ola", mellomnavn = "Norman", etternavn = "Hansen"),
                 adresse = null,

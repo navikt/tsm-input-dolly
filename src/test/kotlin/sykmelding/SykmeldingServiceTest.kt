@@ -59,10 +59,10 @@ class SykmeldingServiceTest {
     fun `should save sykmelding to database and send to kafka`() = runBlocking {
         val dollySykmelding = DollySykmelding(
             ident = "12345678901",
-            aktivitet = Aktivitet(
+            aktivitet = listOf(Aktivitet(
                 fom = LocalDate.of(2025, 9, 10),
                 tom = LocalDate.of(2025, 9, 20)
-            )
+            ))
         )
 
         val sykmeldingId = service.opprettSykmelding(dollySykmelding)

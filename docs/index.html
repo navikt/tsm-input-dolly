@@ -701,6 +701,12 @@
     }
   }
 };
+            defs["AktivitetList"] = {
+  "type" : "array",
+  "items" : {
+    "$ref" : "#/components/schemas/Aktivitet"
+  }
+};
             defs["Date"] = {
   "type" : "string",
   "format" : "date"
@@ -727,7 +733,7 @@
       "$ref" : "#/components/schemas/Ident"
     },
     "aktivitet" : {
-      "$ref" : "#/components/schemas/Aktivitet"
+      "$ref" : "#/components/schemas/AktivitetList"
     }
   }
 };
@@ -741,7 +747,7 @@
       "$ref" : "#/components/schemas/SykmeldingId"
     },
     "aktivitet" : {
-      "$ref" : "#/components/schemas/Aktivitet"
+      "$ref" : "#/components/schemas/AktivitetList"
     },
     "ident" : {
       "$ref" : "#/components/schemas/Ident"
@@ -840,7 +846,7 @@
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Default-getSykmeldingById-0-curl">
                            <pre class="prettyprint"><code class="language-bsh">curl -X GET\
-"http://0.0.0.0:8080/api/api/sykmelding/{sykmeldingId}"</code></pre>
+"http://tsm-input-dolly.tsm/api/sykmelding/{sykmeldingId}"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Default-getSykmeldingById-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -1064,7 +1070,7 @@ except ApiException as e:
                         <div class="tab-content">
                           <div class="tab-pane active" id="examples-Default-getSykmeldingerByIdent-0-curl">
                            <pre class="prettyprint"><code class="language-bsh">curl -X GET\
-"http://0.0.0.0:8080/api/api/sykmelding/ident"</code></pre>
+"http://tsm-input-dolly.tsm/api/sykmelding/ident"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Default-getSykmeldingerByIdent-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -1284,7 +1290,7 @@ except ApiException as e:
                           <div class="tab-pane active" id="examples-Sykmelding-opprettSykmelding-0-curl">
                            <pre class="prettyprint"><code class="language-bsh">curl -X POST\
 -H "Content-Type: application/json"\
-"http://0.0.0.0:8080/api/api/sykmelding"</code></pre>
+"http://tsm-input-dolly.tsm/api/sykmelding"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Sykmelding-opprettSykmelding-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;

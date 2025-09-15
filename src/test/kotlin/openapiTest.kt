@@ -108,10 +108,10 @@ class OpenApiTest {
             val dollySykmeldingResponse = DollySykmeldingResponse(
                 ident = "12345678912",
                 sykmeldingId = "id",
-                aktivitet = Aktivitet(
+                aktivitet = listOf(Aktivitet(
                     fom = LocalDate.of(2025, 9, 10),
                     tom = LocalDate.of(2025, 9, 20)
-                )
+                ))
             )
             coEvery { sykmeldingService.hentSykmelding(any()) } returns dollySykmeldingResponse
 
@@ -135,10 +135,10 @@ class OpenApiTest {
                 DollySykmeldingResponse(
                     ident = ident,
                     sykmeldingId = "id",
-                    aktivitet = Aktivitet(
+                    aktivitet = listOf(Aktivitet(
                         fom = LocalDate.of(2025, 9, 10),
                         tom = LocalDate.of(2025, 9, 20)
-                    )
+                    ))
                 )
             )
         )
@@ -166,10 +166,10 @@ class OpenApiTest {
 
         val dollySykmelding = DollySykmelding(
             ident = "12345678912",
-            aktivitet = Aktivitet(
+            aktivitet = listOf(Aktivitet(
                 fom = LocalDate.of(2025, 9, 10),
                 tom = LocalDate.of(2025, 9, 20)
-            )
+            ))
         )
 
         val dollySykmeldingResponse = DollySykmeldingResponse(

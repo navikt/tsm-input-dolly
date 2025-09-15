@@ -126,10 +126,10 @@ class SykmeldingRepositoryTest {
     private fun createTestDollySykmelding(ident: String): DollySykmelding {
         return DollySykmelding(
             ident = ident,
-            aktivitet = Aktivitet(
+            aktivitet = listOf(Aktivitet(
                 fom = LocalDate.of(2025, 9, 10),
                 tom = LocalDate.of(2025, 9, 20)
-            )
+            ))
         )
     }
 }

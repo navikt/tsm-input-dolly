@@ -103,7 +103,7 @@ components:
         sykmeldingId:
           $ref: '#/components/schemas/SykmeldingId'
         aktivitet:
-          $ref: '#/components/schemas/Aktivitet'
+          $ref: '#/components/schemas/AktivitetList'
         ident:
           $ref: '#/components/schemas/Ident'
     SykmeldingerResponse:
@@ -119,10 +119,14 @@ components:
         ident:
           $ref: '#/components/schemas/Ident'
         aktivitet:
-          $ref: '#/components/schemas/Aktivitet'
+          $ref: '#/components/schemas/AktivitetList'
       required:
         - ident
         - aktivitet
+    AktivitetList:
+      type: array
+      items:
+        $ref: '#/components/schemas/Aktivitet'
     Aktivitet:
       type: object
       properties:
