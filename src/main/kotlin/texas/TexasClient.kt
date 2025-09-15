@@ -5,7 +5,9 @@ import io.ktor.client.call.body
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
+import org.slf4j.LoggerFactory
 
 data class TexasResponse(
     val access_token: String,
@@ -21,6 +23,10 @@ class TexasClient(
     private val tokenEndpoint: String,
     private val httpClient: HttpClient,
 ) {
+    companion object {
+        private val log = LoggerFactory.getLogger(TexasClient::class.java)
+    }
+
     suspend fun getAccessToken(scope: String): String {
 
         val requestBody = TexasRequest(
@@ -28,10 +34,16 @@ class TexasClient(
             target = scope,
         )
 
-        return httpClient.post(tokenEndpoint) {
+        val response = httpClient.post(tokenEndpoint) {
             contentType(ContentType.Application.Json)
             setBody(requestBody)
-        }.body<TexasResponse>().access_token
+        }
 
+        log.info("Texas endpoint returned ${response.status}")
+        if (response.status != HttpStatusCode.OK) {
+            throw IllegalStateException("Token endpoint returned ${response.status}")
+        } else {
+            return response.body<TexasResponse>().access_token
+        }
     }
 }

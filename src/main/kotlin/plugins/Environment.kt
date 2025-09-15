@@ -15,6 +15,7 @@ class Environment (
     val jdbcUrl: String,
     val tsmPdlScope: String,
     val tsmPdlUrl: String,
+    val texasUrl: String,
 )
 
 fun getEnvVar(varName: String, defaultValue: String? = null) =
@@ -47,7 +48,11 @@ fun Application.createEnvironment(): Environment {
         sykmeldingTopic = "tsm.sykmeldinger",
         jdbcUrl = environment.config.property("database.url").getString(),
         tsmPdlUrl = "http://tsm-pdl-cache",
-        tsmPdlScope = "api://dev-gcp.tsm.tsm-pdl-cache/.default"
+        tsmPdlScope = "api://dev-gcp.tsm.tsm-pdl-cache/.default",
+        texasUrl = when(runEnvironment) {
+            RunEnvironment.LOCAL -> "no texas yet"
+            else -> getEnvVar("NAIS_TOKEN_ENDPOINT")
+        }
     )
 }
 

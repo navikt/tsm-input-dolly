@@ -58,7 +58,7 @@ fun tsmPdlModules()  = module {
         }
     } }
     single {
-        TexasClient(get<Environment>().tsmPdlUrl, get())
+        TexasClient(get<Environment>().texasUrl, get())
     }
     single {
         val env = get<Environment>()
