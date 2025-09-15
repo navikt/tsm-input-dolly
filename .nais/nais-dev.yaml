@@ -50,3 +50,9 @@ spec:
         - application: teamsykmelding-mock
           namespace: teamsykmelding
           cluster: dev-gcp
+        - application: testnav-sykemelding-proxy-trygdeetaten
+          namespace: dolly
+          cluster: dev-gcp
+        - application: testnav-sykemelding-proxy
+          namespace: dolly
+          cluster: dev-gcp
