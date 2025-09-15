@@ -1,6 +1,8 @@
 package no.nav.tsm.plugins
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.cio.CIO
 import io.ktor.server.application.Application
 import io.ktor.server.application.ApplicationStarted
 import io.ktor.server.application.ApplicationStopping
@@ -17,6 +19,8 @@ import no.nav.tsm.sykmelding.consumer.SykmeldingConsumerService
 import no.nav.tsm.sykmelding.input.core.model.sykmeldingObjectMapper
 import no.nav.tsm.sykmelding.input.producer.SykmeldingInputKafkaInputFactory
 import no.nav.tsm.sykmelding.repository.SykmeldingRepository
+import no.nav.tsm.texas.TexasClient
+import no.nav.tsm.`tsm-pdl`.TsmPdlClient
 import org.apache.kafka.clients.consumer.Consumer
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.consumer.KafkaConsumer
@@ -28,6 +32,7 @@ import org.koin.ktor.plugin.Koin
 import org.koin.logger.slf4jLogger
 import org.postgresql.ds.PGSimpleDataSource
 import javax.sql.DataSource
+import kotlin.math.sin
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.toJavaDuration
 
@@ -36,9 +41,20 @@ fun Application.configureKoin() {
     install(Koin) {
         slf4jLogger()
         modules(
+            tsmPdlModules(),
             sykmeldingModules()
         )
     }
+}
+
+fun Application.tsmPdlModules()  = module {
+    single { HttpClient(CIO) }
+    single {
+        TexasClient(get<Environment>().tsmPdlUrl, get())
+    }
+    single {
+        val env = get<Environment>()
+        TsmPdlClient(get(), get(), env.tsmPdlScope, env.tsmPdlUrl ) }
 }
 
 fun Application.sykmeldingModules() = module {

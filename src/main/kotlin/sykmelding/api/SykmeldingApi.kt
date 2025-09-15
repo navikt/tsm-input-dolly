@@ -1,6 +1,7 @@
 package no.nav.tsm.sykmelding.api
 
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.HttpStatusCode.Companion.InternalServerError
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
@@ -10,14 +11,16 @@ import io.ktor.server.routing.post
 import no.nav.tsm.sykmelding.SykmeldingService
 import no.nav.tsm.sykmelding.model.DollySykmelding
 import no.nav.tsm.sykmelding.model.DollySykmeldingResponse
-import no.nav.tsm.sykmelding.model.InternalServerError
+import no.nav.tsm.sykmelding.model.ErrorMessage
 import no.nav.tsm.sykmelding.model.SykmeldingNotFound
+import no.nav.tsm.`tsm-pdl`.TsmPdlClient
 import no.nav.tsm.utils.logger
 import org.koin.ktor.ext.inject
 import org.slf4j.LoggerFactory
 
 fun Route.sykmeldingApi() {
     val sykmeldingService by inject<SykmeldingService>()
+    val tsmPdlClient by inject<TsmPdlClient>()
     val log = LoggerFactory.getLogger("no.nav.tsm.sykmelding.api.SykmeldingApiKt")
     post("/sykmelding") {
         logger.info("Oppretter ny sykmelding")
@@ -29,6 +32,13 @@ fun Route.sykmeldingApi() {
                 call.respond(HttpStatusCode.BadRequest, "fnr må vere 11 siffer. Lengde: ${sykmelding.ident.length}")
                 return@post
             }
+            val personExists = tsmPdlClient.personExists(ident = sykmelding.ident)
+
+            if(!personExists) {
+                call.respond(HttpStatusCode.BadRequest, ErrorMessage("Fant ikke person i PDL"))
+                return@post
+            }
+
             val sykmeldingId = sykmeldingService.opprettSykmelding(sykmelding)
 
             log.info("Opprettet sykmelding med id $sykmeldingId")
@@ -41,6 +51,7 @@ fun Route.sykmeldingApi() {
             )
         } catch (e: Exception) {
             logger.error("Noe gikk galt ved oppretting av sykmelding", e)
+            call.respond(InternalServerError, ErrorMessage("Noe gikk galt ved oppretting av sykmelding"))
         }
 
     }
@@ -58,7 +69,7 @@ fun Route.sykmeldingApi() {
             }
         } catch (e: Exception) {
             logger.error("Noe gikk galt ved henting av sykmelding med id $sykmeldingId", e)
-            call.respond(HttpStatusCode.InternalServerError, InternalServerError("Error while getting sykmelding with id: $sykmeldingId"))
+            call.respond(InternalServerError, ErrorMessage("Error while getting sykmelding with id: $sykmeldingId"))
         }
     }
 
@@ -72,6 +83,7 @@ fun Route.sykmeldingApi() {
             call.respond(HttpStatusCode.OK, response)
         } catch (e: Exception) {
             logger.error("Noe gikk galt ved henting av sykmeldinger for ident", e)
+            call.respond(InternalServerError, ErrorMessage("Error while getting sykmeldinger for ident"))
         }
     }
     delete("/sykmelding/ident") {
@@ -84,7 +96,7 @@ fun Route.sykmeldingApi() {
             call.respond(HttpStatusCode.OK)
         } catch (e: Exception) {
             logger.error("Noe gikk galt ved sletting av sykmeldinger for ident", e)
-            call.respond(HttpStatusCode.InternalServerError, InternalServerError("Error while deleting sykmelding for ident"))
+            call.respond(InternalServerError, ErrorMessage("Error while deleting sykmelding for ident"))
         }
 
     }

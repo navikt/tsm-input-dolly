@@ -19,6 +19,7 @@ import no.nav.tsm.sykmelding.model.Aktivitet
 import no.nav.tsm.sykmelding.model.DollySykmelding
 import no.nav.tsm.sykmelding.model.DollySykmeldingResponse
 import no.nav.tsm.sykmelding.model.DollySykmeldingerResponse
+import no.nav.tsm.`tsm-pdl`.TsmPdlClient
 import org.hamcrest.CoreMatchers.equalTo
 import org.junit.Assert
 import org.junit.jupiter.api.AfterAll
@@ -33,6 +34,7 @@ import kotlin.test.Test
 class OpenApiTest {
 
         private val sykmeldingService = mockk<SykmeldingService>()
+        private val tsmPdlClient = mockk<TsmPdlClient>()
         val scope = CoroutineScope(Dispatchers.IO)
         private val filter: OpenApiValidationFilter
         private val application = scope.
@@ -42,6 +44,7 @@ class OpenApiTest {
                 install(Koin) {
                     slf4jLogger()
                     modules(module {
+                        single { tsmPdlClient }
                         single {
                             sykmeldingService
                         }
@@ -159,10 +162,66 @@ class OpenApiTest {
     }
 
     @Test
+    fun `Test GET sykmeldinger for ident 500 response`() {
+        val ident = "12345678912"
+
+        coEvery { sykmeldingService.hentSykmeldingByIdent(any()) } throws RuntimeException("Test exception")
+
+        RestAssured
+            .given()
+            .filter(filter)
+            .header("X-ident", ident)
+            .get("/api/sykmelding/ident")
+            .then()
+            .statusCode(500)
+
+    }
+
+    @Test
+    fun `Post gives 400 when person not in folkeregisteret`() {
+        coEvery { tsmPdlClient.personExists(any()) } returns false
+        val dollySykmelding = DollySykmelding(
+            ident = "12345678912",
+            aktivitet = listOf(Aktivitet(
+                fom = LocalDate.of(2025, 9, 10),
+                tom = LocalDate.of(2025, 9, 20)
+            ))
+        )
+        RestAssured
+            .given()
+            .filter(filter)
+            .contentType("application/json")
+            .body(sykmeldingObjectMapper.writeValueAsString(dollySykmelding))
+            .post("/api/sykmelding")
+            .then()
+            .statusCode(400)
+    }
+
+    @Test
+    fun `Post gives 500 when some other error happens`() {
+        coEvery { tsmPdlClient.personExists(any()) } throws RuntimeException("Other exceptoin")
+        val dollySykmelding = DollySykmelding(
+            ident = "12345678912",
+            aktivitet = listOf(Aktivitet(
+                fom = LocalDate.of(2025, 9, 10),
+                tom = LocalDate.of(2025, 9, 20)
+            ))
+        )
+        RestAssured
+            .given()
+            .filter(filter)
+            .contentType("application/json")
+            .body(sykmeldingObjectMapper.writeValueAsString(dollySykmelding))
+            .post("/api/sykmelding")
+            .then()
+            .statusCode(500)
+    }
+
+    @Test
     fun `Test POST sykmelding 200`() {
         val sykmeldingId = "123"
         coEvery { sykmeldingService.opprettSykmelding(any()) } returns sykmeldingId
-
+        coEvery { tsmPdlClient.personExists(any()) } returns true
         val dollySykmelding = DollySykmelding(
             ident = "12345678912",
             aktivitet = listOf(Aktivitet(

@@ -27,6 +27,6 @@ data class SykmeldingNotFound(
     val message: String = "Sykmelding not found $id"
 )
 
-data class InternalServerError(
+data class ErrorMessage(
     val message: String
 )
