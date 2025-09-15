@@ -3,6 +3,8 @@ package no.nav.tsm.plugins
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.serialization.jackson.jackson
 import io.ktor.server.application.Application
 import io.ktor.server.application.ApplicationStarted
 import io.ktor.server.application.ApplicationStopping
@@ -47,8 +49,14 @@ fun Application.configureKoin() {
     }
 }
 
-fun Application.tsmPdlModules()  = module {
-    single { HttpClient(CIO) }
+fun tsmPdlModules()  = module {
+    single { HttpClient(CIO) {
+        install(ContentNegotiation) {
+            jackson {
+                sykmeldingObjectMapper
+            }
+        }
+    } }
     single {
         TexasClient(get<Environment>().tsmPdlUrl, get())
     }
