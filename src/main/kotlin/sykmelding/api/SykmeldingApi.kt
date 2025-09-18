@@ -39,6 +39,10 @@ fun Route.sykmeldingApi() {
                 return@post
             }
 
+            if(sykmelding.aktivitet.any { it.grad != null && it.grad !in 1..99 }) {
+                call.respond(HttpStatusCode.BadRequest, ErrorMessage("Grad must be in rage 1-99"))
+            }
+
             val sykmeldingId = sykmeldingService.opprettSykmelding(sykmelding)
 
             log.info("Opprettet sykmelding med id $sykmeldingId")

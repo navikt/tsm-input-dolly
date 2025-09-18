@@ -2,6 +2,8 @@ package no.nav.tsm.sykmelding
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import no.nav.tsm.sykmelding.input.core.model.Aktivitetstype
+import no.nav.tsm.sykmelding.input.core.model.Gradert
 import no.nav.tsm.sykmelding.input.core.model.SykmeldingRecord
 import no.nav.tsm.sykmelding.input.producer.SykmeldingInputProducer
 import no.nav.tsm.sykmelding.mapper.mapToSykmeldingRecord
@@ -37,7 +39,10 @@ class SykmeldingService(private val sykmeldingProducer: SykmeldingInputProducer,
         aktivitet = sykmeldingRecord.sykmelding.aktivitet.map {
             Aktivitet(
                 fom = it.fom,
-                tom = it.tom
+                tom = it.tom,
+                grad =if(it is Gradert) {
+                    it.grad
+                } else null
             )
         }
     )

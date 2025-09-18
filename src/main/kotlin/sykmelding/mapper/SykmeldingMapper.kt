@@ -4,6 +4,7 @@ import no.nav.tsm.sykmelding.input.core.model.AktivitetIkkeMulig
 import no.nav.tsm.sykmelding.input.core.model.Behandler
 import no.nav.tsm.sykmelding.input.core.model.DigitalSykmelding
 import no.nav.tsm.sykmelding.input.core.model.DigitalSykmeldingMetadata
+import no.nav.tsm.sykmelding.input.core.model.Gradert
 import no.nav.tsm.sykmelding.input.core.model.IngenArbeidsgiver
 import no.nav.tsm.sykmelding.input.core.model.MedisinskVurdering
 import no.nav.tsm.sykmelding.input.core.model.Pasient
@@ -16,6 +17,7 @@ import no.nav.tsm.sykmelding.input.core.model.metadata.HelsepersonellKategori
 import no.nav.tsm.sykmelding.input.core.model.metadata.Navn
 import no.nav.tsm.sykmelding.input.core.model.metadata.PersonId
 import no.nav.tsm.sykmelding.input.core.model.metadata.PersonIdType
+import no.nav.tsm.sykmelding.model.Aktivitet
 import no.nav.tsm.sykmelding.model.DollySykmelding
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
@@ -46,12 +48,7 @@ fun mapToSykmeldingRecord(sykmeldingId: String, sykmelding: DollySykmelding): Sy
                 skjermetForPasient = false,
             ),
             aktivitet = sykmelding.aktivitet.map {
-                AktivitetIkkeMulig(
-                    fom = it.fom,
-                    tom = it.tom,
-                    medisinskArsak = null,
-                    arbeidsrelatertArsak = null,
-                )
+                toAktivitet(it)
             },
             behandler = Behandler(
                 navn = Navn(fornavn = "Ola", mellomnavn = "Norman", etternavn = "Hansen"),
@@ -73,4 +70,22 @@ fun mapToSykmeldingRecord(sykmeldingId: String, sykmelding: DollySykmelding): Sy
             rules = emptyList(),
         )
     )
+}
+
+private fun toAktivitet(aktivitet: Aktivitet): no.nav.tsm.sykmelding.input.core.model.Aktivitet {
+    return when (aktivitet.grad) {
+        null -> AktivitetIkkeMulig(
+            fom = aktivitet.fom,
+            tom = aktivitet.tom,
+            medisinskArsak = null,
+            arbeidsrelatertArsak = null
+        )
+
+        else -> Gradert(
+            grad = aktivitet.grad,
+            fom = aktivitet.fom,
+            tom = aktivitet.tom,
+            reisetilskudd = false,
+        )
+    }
 }

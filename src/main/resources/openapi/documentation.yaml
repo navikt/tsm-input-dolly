@@ -145,21 +145,22 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/Aktivitet'
+    Grad:
+      type: integer
+      minimum: 1
+      maximum: 99
+      nullable: true
+      description: valgfri grad av sykmelding i %. uten denne er den ansett til å være 100% sykmelding
     Aktivitet:
       type: object
+      example: { fom: "2025-01-01", tom: "2025-01-02"}
       properties:
+        grad:
+          $ref: '#/components/schemas/Grad'
         fom:
           $ref: '#/components/schemas/Date'
         tom:
           $ref: '#/components/schemas/Date'
-      #        type:
-      #          type: string
-      #          enum:
-      #            - AKTIVITET_IKKE_MULIG
-      #            - AVVENTENDE,
-      #            - BEHANDLINGSDAGER,
-      #            - GRADERT,
-      #            - REISETILSKUDD
       required:
         - fom
         - tom

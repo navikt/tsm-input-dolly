@@ -4,6 +4,7 @@ import java.time.LocalDate
 data class Aktivitet(
     val fom: LocalDate,
     val tom: LocalDate,
+    val grad: Int? = null,
 )
 
 data class DollySykmelding(

@@ -113,7 +113,7 @@ class OpenApiTest {
                 sykmeldingId = "id",
                 aktivitet = listOf(Aktivitet(
                     fom = LocalDate.of(2025, 9, 10),
-                    tom = LocalDate.of(2025, 9, 20)
+                    tom = LocalDate.of(2025, 9, 20),
                 ))
             )
             coEvery { sykmeldingService.hentSykmelding(any()) } returns dollySykmeldingResponse
@@ -249,6 +249,64 @@ class OpenApiTest {
             sykmeldingObjectMapper.readValue(it, DollySykmeldingResponse::class.java)
         }
         Assert.assertEquals(dollySykmeldingResponse, result)
+
+    }
+
+
+    @Test
+    fun `Test POST sykmelding 200 with grad`() {
+        val sykmeldingId = "123"
+        coEvery { sykmeldingService.opprettSykmelding(any()) } returns sykmeldingId
+        coEvery { tsmPdlClient.personExists(any()) } returns true
+        val dollySykmelding = DollySykmelding(
+            ident = "12345678912",
+            aktivitet = listOf(Aktivitet(
+                fom = LocalDate.of(2025, 9, 10),
+                tom = LocalDate.of(2025, 9, 20),
+                grad = 50
+            ))
+        )
+
+        RestAssured
+            .given()
+            .filter(filter)
+            .contentType("application/json")
+            .body(sykmeldingObjectMapper.writeValueAsString(dollySykmelding))
+            .post("/api/sykmelding")
+            .then()
+            .statusCode(200)
+
+    }
+    @Test
+    fun `Test POST sykmelding with invalid grad gives 400`() {
+        val sykmeldingId = "123"
+        coEvery { sykmeldingService.opprettSykmelding(any()) } returns sykmeldingId
+        coEvery { tsmPdlClient.personExists(any()) } returns true
+        val aktivitet = Aktivitet(
+            fom = LocalDate.of(2025, 9, 10),
+            tom = LocalDate.of(2025, 9, 20),
+            grad = 0
+        )
+        val dollySykmelding = DollySykmelding(
+            ident = "12345678912",
+            aktivitet = listOf(aktivitet)
+        )
+
+
+        RestAssured
+            .given()
+            .contentType("application/json")
+            .body(sykmeldingObjectMapper.writeValueAsString(dollySykmelding))
+            .post("/api/sykmelding")
+            .then()
+            .statusCode(400)
+        RestAssured
+            .given()
+            .contentType("application/json")
+            .body(sykmeldingObjectMapper.writeValueAsString(dollySykmelding.copy(aktivitet = listOf(aktivitet.copy(grad = 100)))))
+            .post("/api/sykmelding")
+            .then()
+            .statusCode(400)
 
     }
 

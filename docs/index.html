@@ -693,12 +693,19 @@
   "required" : [ "fom", "tom" ],
   "type" : "object",
   "properties" : {
+    "grad" : {
+      "$ref" : "#/components/schemas/Grad"
+    },
     "fom" : {
       "$ref" : "#/components/schemas/Date"
     },
     "tom" : {
       "$ref" : "#/components/schemas/Date"
     }
+  },
+  "example" : {
+    "fom" : "2025-01-01",
+    "tom" : "2025-01-02"
   }
 };
             defs["AktivitetList"] = {
@@ -710,6 +717,13 @@
             defs["Date"] = {
   "type" : "string",
   "format" : "date"
+};
+            defs["Grad"] = {
+  "maximum" : 99,
+  "minimum" : 1,
+  "type" : "integer",
+  "description" : "valgfri grad av sykmelding i %. uten denne er den ansett til å være 100% sykmelding",
+  "nullable" : true
 };
             defs["Ident"] = {
   "pattern" : "^[0-9]{11}$",
