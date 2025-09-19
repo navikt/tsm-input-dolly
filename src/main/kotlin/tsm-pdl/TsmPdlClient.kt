@@ -24,7 +24,7 @@ class TsmPdlClient(private val texasClient: TexasClient,
         val token = texasClient.getAccessToken(tsmScope)
         val response = httpClient.get("$tsmUrl/api/person") {
             bearerAuth(token)
-            header("idnet", ident)
+            header("ident", ident)
             accept(ContentType.Application.Json)
         }
         if(response.status == HttpStatusCode.OK) {
