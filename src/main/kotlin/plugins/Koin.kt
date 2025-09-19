@@ -1,6 +1,10 @@
 package no.nav.tsm.plugins
 
+import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -34,7 +38,6 @@ import org.koin.ktor.plugin.Koin
 import org.koin.logger.slf4jLogger
 import org.postgresql.ds.PGSimpleDataSource
 import javax.sql.DataSource
-import kotlin.math.sin
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.toJavaDuration
 
@@ -53,7 +56,9 @@ fun tsmPdlModules()  = module {
     single { HttpClient(CIO) {
         install(ContentNegotiation) {
             jackson {
-                sykmeldingObjectMapper
+                registerModule(JavaTimeModule())
+                configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
             }
         }
     } }
