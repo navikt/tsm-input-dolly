@@ -14,12 +14,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import no.nav.tsm.sykmelding.SykmeldingService
 import no.nav.tsm.sykmelding.api.sykmeldingApi
+import no.nav.tsm.sykmelding.exceptions.SykmeldingValidationException
 import no.nav.tsm.sykmelding.input.core.model.sykmeldingObjectMapper
 import no.nav.tsm.sykmelding.model.Aktivitet
 import no.nav.tsm.sykmelding.model.DollySykmelding
 import no.nav.tsm.sykmelding.model.DollySykmeldingResponse
 import no.nav.tsm.sykmelding.model.DollySykmeldingerResponse
-import no.nav.tsm.`tsm-pdl`.TsmPdlClient
 import org.hamcrest.CoreMatchers.equalTo
 import org.junit.Assert
 import org.junit.jupiter.api.AfterAll
@@ -34,7 +34,6 @@ import kotlin.test.Test
 class OpenApiTest {
 
         private val sykmeldingService = mockk<SykmeldingService>()
-        private val tsmPdlClient = mockk<TsmPdlClient>()
         val scope = CoroutineScope(Dispatchers.IO)
         private val filter: OpenApiValidationFilter
         private val application = scope.
@@ -44,7 +43,6 @@ class OpenApiTest {
                 install(Koin) {
                     slf4jLogger()
                     modules(module {
-                        single { tsmPdlClient }
                         single {
                             sykmeldingService
                         }
@@ -179,7 +177,8 @@ class OpenApiTest {
 
     @Test
     fun `Post gives 400 when person not in folkeregisteret`() {
-        coEvery { tsmPdlClient.personExists(any()) } returns false
+
+        coEvery { sykmeldingService.opprettSykmelding(any()) } throws(SykmeldingValidationException("person not found in pdl"))
         val dollySykmelding = DollySykmelding(
             ident = "12345678912",
             aktivitet = listOf(Aktivitet(
@@ -199,7 +198,9 @@ class OpenApiTest {
 
     @Test
     fun `Post gives 500 when some other error happens`() {
-        coEvery { tsmPdlClient.personExists(any()) } throws RuntimeException("Other exceptoin")
+        coEvery { sykmeldingService.opprettSykmelding(any()) } throws(RuntimeException("Exception"))
+
+
         val dollySykmelding = DollySykmelding(
             ident = "12345678912",
             aktivitet = listOf(Aktivitet(
@@ -221,7 +222,6 @@ class OpenApiTest {
     fun `Test POST sykmelding 200`() {
         val sykmeldingId = "123"
         coEvery { sykmeldingService.opprettSykmelding(any()) } returns sykmeldingId
-        coEvery { tsmPdlClient.personExists(any()) } returns true
         val dollySykmelding = DollySykmelding(
             ident = "12345678912",
             aktivitet = listOf(Aktivitet(
@@ -257,7 +257,6 @@ class OpenApiTest {
     fun `Test POST sykmelding 200 with grad`() {
         val sykmeldingId = "123"
         coEvery { sykmeldingService.opprettSykmelding(any()) } returns sykmeldingId
-        coEvery { tsmPdlClient.personExists(any()) } returns true
         val dollySykmelding = DollySykmelding(
             ident = "12345678912",
             aktivitet = listOf(Aktivitet(
@@ -279,9 +278,8 @@ class OpenApiTest {
     }
     @Test
     fun `Test POST sykmelding with invalid grad gives 400`() {
-        val sykmeldingId = "123"
-        coEvery { sykmeldingService.opprettSykmelding(any()) } returns sykmeldingId
-        coEvery { tsmPdlClient.personExists(any()) } returns true
+        coEvery { sykmeldingService.opprettSykmelding(any()) } throws(SykmeldingValidationException("Grad must be in rage 1-99"))
+
         val aktivitet = Aktivitet(
             fom = LocalDate.of(2025, 9, 10),
             tom = LocalDate.of(2025, 9, 20),
@@ -308,6 +306,28 @@ class OpenApiTest {
             .then()
             .statusCode(400)
 
+    }
+
+    @Test
+    fun `Test POST sykmelding with invalid aktivitet gives 400`() {
+        coEvery { sykmeldingService.opprettSykmelding(any()) } throws(SykmeldingValidationException("person not found in pdl"))
+        val aktivitet = Aktivitet(
+            fom = LocalDate.of(2025, 9, 10),
+            tom = LocalDate.of(2025, 9, 20),
+            grad = 0
+        )
+        val dollySykmelding = DollySykmelding(
+            ident = "12345678912",
+            aktivitet = listOf(aktivitet)
+        )
+
+        RestAssured
+            .given()
+            .contentType("application/json")
+            .body(sykmeldingObjectMapper.writeValueAsString(dollySykmelding))
+            .post("/api/sykmelding")
+            .then()
+            .statusCode(400)
     }
 
     @Test

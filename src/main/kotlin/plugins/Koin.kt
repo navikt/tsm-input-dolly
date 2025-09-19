@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -115,7 +114,7 @@ fun Application.sykmeldingModules() = module {
     }
 
     single { SykmeldingConsumerService(get(), get(), get<Environment>().sykmeldingTopic) }
-    single { SykmeldingService(get(), get()) }
+    single { SykmeldingService(get(), get(), get()) }
 }
 
 fun Application.configureConsumer() {

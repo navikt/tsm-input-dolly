@@ -9,39 +9,23 @@ import io.ktor.server.routing.delete
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import no.nav.tsm.sykmelding.SykmeldingService
+import no.nav.tsm.sykmelding.exceptions.SykmeldingValidationException
 import no.nav.tsm.sykmelding.model.DollySykmelding
 import no.nav.tsm.sykmelding.model.DollySykmeldingResponse
 import no.nav.tsm.sykmelding.model.ErrorMessage
 import no.nav.tsm.sykmelding.model.SykmeldingNotFound
-import no.nav.tsm.`tsm-pdl`.TsmPdlClient
 import no.nav.tsm.utils.logger
 import org.koin.ktor.ext.inject
 import org.slf4j.LoggerFactory
 
 fun Route.sykmeldingApi() {
     val sykmeldingService by inject<SykmeldingService>()
-    val tsmPdlClient by inject<TsmPdlClient>()
     val log = LoggerFactory.getLogger("no.nav.tsm.sykmelding.api.SykmeldingApiKt")
     post("/sykmelding") {
         logger.info("Oppretter ny sykmelding")
 
         try {
             val sykmelding = call.receive<DollySykmelding>()
-
-            if (sykmelding.ident.length != 11) {
-                call.respond(HttpStatusCode.BadRequest, "fnr må vere 11 siffer. Lengde: ${sykmelding.ident.length}")
-                return@post
-            }
-            val personExists = tsmPdlClient.personExists(ident = sykmelding.ident)
-
-            if(!personExists) {
-                call.respond(HttpStatusCode.BadRequest, ErrorMessage("Fant ikke person i PDL"))
-                return@post
-            }
-
-            if(sykmelding.aktivitet.any { it.grad != null && it.grad !in 1..99 }) {
-                call.respond(HttpStatusCode.BadRequest, ErrorMessage("Grad must be in rage 1-99"))
-            }
 
             val sykmeldingId = sykmeldingService.opprettSykmelding(sykmelding)
 
@@ -53,7 +37,14 @@ fun Route.sykmeldingApi() {
                     aktivitet = sykmelding.aktivitet
                 )
             )
-        } catch (e: Exception) {
+        } catch (ex: SykmeldingValidationException) {
+            logger.error("Validering av sykmelding feilet: ${ex.message}")
+            call.respond(
+                HttpStatusCode.BadRequest,
+                ErrorMessage(ex.message ?: "Validering av sykmelding feilet")
+            )
+        }
+        catch (e: Exception) {
             logger.error("Noe gikk galt ved oppretting av sykmelding", e)
             call.respond(InternalServerError, ErrorMessage("Noe gikk galt ved oppretting av sykmelding"))
         }
