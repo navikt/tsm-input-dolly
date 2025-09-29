@@ -12,7 +12,9 @@ import no.nav.tsm.sykmelding.model.Aktivitet
 import no.nav.tsm.sykmelding.model.DollySykmelding
 import no.nav.tsm.sykmelding.repository.SykmeldingRepository
 import no.nav.tsm.sykmelding.testcontainers.PostgresSQL.Companion.postgreSQLContainer
+import no.nav.tsm.`tsm-pdl`.Navn
 import no.nav.tsm.`tsm-pdl`.TsmPdlClient
+import no.nav.tsm.`tsm-pdl`.TsmPdlResponse
 import org.flywaydb.core.Flyway
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
@@ -49,7 +51,9 @@ class SykmeldingServiceTest {
             .locations("classpath:db/migrations")
             .load()
         flyway.migrate()
-        coEvery { tsmPdlClient.personExists(any()) } returns true
+        coEvery { tsmPdlClient.getPerson(any()) } returns TsmPdlResponse(
+            false, navn = Navn("fornavn", null, "etternavn"), fodselsdato = LocalDate.now(), doed = false
+        )
         repository = SykmeldingRepository(dataSource, sykmeldingObjectMapper)
         mockKafkaProducer = mock<SykmeldingInputProducer>()
         service = SykmeldingService(mockKafkaProducer, repository, tsmPdlClient)
@@ -124,7 +128,7 @@ class SykmeldingServiceTest {
                 grad = 101
             ))
         )
-        coEvery { tsmPdlClient.personExists(any()) } returns false
+        coEvery { tsmPdlClient.getPerson(any()) } returns null
         assertThrows<SykmeldingValidationException>("Fant ikke person i PDL") { service.opprettSykmelding(dollySykmelding) }
 
     }

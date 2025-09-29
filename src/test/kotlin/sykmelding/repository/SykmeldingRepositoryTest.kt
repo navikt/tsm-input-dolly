@@ -10,6 +10,7 @@ import no.nav.tsm.sykmelding.mapper.mapToSykmeldingRecord
 import no.nav.tsm.sykmelding.model.Aktivitet
 import no.nav.tsm.sykmelding.model.DollySykmelding
 import no.nav.tsm.sykmelding.testcontainers.PostgresSQL.Companion.postgreSQLContainer
+import no.nav.tsm.`tsm-pdl`.Navn
 import org.flywaydb.core.Flyway
 import org.postgresql.ds.PGSimpleDataSource
 import java.time.LocalDate
@@ -28,7 +29,7 @@ class SykmeldingRepositoryTest {
     private lateinit var dataSource: DataSource
     private lateinit var repository: SykmeldingRepository
     private val objectMapper: ObjectMapper = sykmeldingObjectMapper
-
+    private val navn = Navn("fornavn", null, "etternavn")
     @BeforeTest
     fun setup() {
         dataSource = PGSimpleDataSource().apply {
@@ -59,7 +60,7 @@ class SykmeldingRepositoryTest {
         val sykmeldingId = UUID.randomUUID().toString()
         val ident = "12345678901"
         val dollySykmelding = createTestDollySykmelding(ident)
-        val sykmeldingRecord = mapToSykmeldingRecord(sykmeldingId, dollySykmelding)
+        val sykmeldingRecord = mapToSykmeldingRecord(sykmeldingId, dollySykmelding, navn)
 
         repository.saveSykmelding(sykmeldingId, ident, sykmeldingRecord)
         val retrieved = repository.getById(sykmeldingId)
@@ -75,7 +76,7 @@ class SykmeldingRepositoryTest {
         val sykmeldingId = UUID.randomUUID().toString()
         val ident = "12345678901"
         val dollySykmelding = createTestDollySykmelding(ident)
-        val sykmeldingRecord = mapToSykmeldingRecord(sykmeldingId, dollySykmelding)
+        val sykmeldingRecord = mapToSykmeldingRecord(sykmeldingId, dollySykmelding, navn)
 
         repository.saveSykmelding(sykmeldingId, ident, sykmeldingRecord)
         val retrieved = repository.getById(sykmeldingId)
@@ -99,8 +100,8 @@ class SykmeldingRepositoryTest {
         val sykmeldingId2 = UUID.randomUUID().toString()
         val dollySykmelding1 = createTestDollySykmelding(ident)
         val dollySykmelding2 = createTestDollySykmelding(ident)
-        val sykmeldingRecord1 = mapToSykmeldingRecord(sykmeldingId1, dollySykmelding1)
-        val sykmeldingRecord2 = mapToSykmeldingRecord(sykmeldingId2, dollySykmelding2)
+        val sykmeldingRecord1 = mapToSykmeldingRecord(sykmeldingId1, dollySykmelding1, navn)
+        val sykmeldingRecord2 = mapToSykmeldingRecord(sykmeldingId2, dollySykmelding2, navn)
 
         repository.saveSykmelding(sykmeldingId1, ident, sykmeldingRecord1)
         repository.saveSykmelding(sykmeldingId2, ident, sykmeldingRecord2)
@@ -123,7 +124,7 @@ class SykmeldingRepositoryTest {
         val sykmeldingId = UUID.randomUUID().toString()
         val ident = "98765432109"
         val dollySykmelding = createTestDollySykmelding(ident)
-        val sykmeldingRecord = mapToSykmeldingRecord(sykmeldingId, dollySykmelding)
+        val sykmeldingRecord = mapToSykmeldingRecord(sykmeldingId, dollySykmelding, navn)
 
         repository.saveSykmelding(sykmeldingId, ident, sykmeldingRecord)
         val retrieved = repository.getById(sykmeldingId)

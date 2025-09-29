@@ -9,18 +9,28 @@ import io.ktor.client.request.header
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import no.nav.tsm.texas.TexasClient
+import java.time.LocalDate
 
 data class TsmPdlResponse(
     val falskIdent: Boolean,
+    val navn: Navn?,
+    val fodselsdato: LocalDate?,
     val doed: Boolean,
 )
+
+data class Navn(
+    val fornavn: String,
+    val mellomnavn: String?,
+    val etternavn: String,
+)
+
 
 class TsmPdlClient(private val texasClient: TexasClient,
                     private val httpClient: HttpClient,
                    private val tsmScope: String,
                    private val tsmUrl: String) {
 
-    suspend fun personExists(ident: String) : Boolean {
+    suspend fun getPerson(ident: String) : TsmPdlResponse? {
         val token = texasClient.getAccessToken(tsmScope)
         val response = httpClient.get("$tsmUrl/api/person") {
             bearerAuth(token)
@@ -29,8 +39,9 @@ class TsmPdlClient(private val texasClient: TexasClient,
         }
         if(response.status == HttpStatusCode.OK) {
             val body = response.body<TsmPdlResponse>()
-            return !(body.falskIdent || body.doed)
+            return body
         }
-        return false
+        return null
     }
+
 }

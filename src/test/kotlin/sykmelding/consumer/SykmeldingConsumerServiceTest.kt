@@ -13,6 +13,7 @@ import no.nav.tsm.sykmelding.mapper.mapToSykmeldingRecord
 import no.nav.tsm.sykmelding.model.Aktivitet
 import no.nav.tsm.sykmelding.model.DollySykmelding
 import no.nav.tsm.sykmelding.repository.SykmeldingRepository
+import no.nav.tsm.`tsm-pdl`.Navn
 import org.apache.kafka.clients.consumer.Consumer
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.apache.kafka.clients.consumer.ConsumerRecords
@@ -44,7 +45,7 @@ class SykmeldingConsumerServiceTest {
         val sykmeldingId = UUID.randomUUID().toString()
         val ident = "12345678901"
         val dollySykmelding = createTestDollySykmelding(ident)
-        val sykmeldingRecord = mapToSykmeldingRecord(sykmeldingId, dollySykmelding)
+        val sykmeldingRecord = mapToSykmeldingRecord(sykmeldingId, dollySykmelding, Navn("fornavn", null, "etternavn"))
         val json = objectMapper.writeValueAsBytes(sykmeldingRecord)
 
 

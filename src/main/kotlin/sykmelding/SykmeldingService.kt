@@ -13,6 +13,7 @@ import no.nav.tsm.sykmelding.model.DollySykmeldingResponse
 import no.nav.tsm.sykmelding.model.DollySykmeldingerResponse
 import no.nav.tsm.sykmelding.repository.SykmeldingRepository
 import no.nav.tsm.`tsm-pdl`.TsmPdlClient
+import no.nav.tsm.`tsm-pdl`.TsmPdlResponse
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.util.UUID
@@ -20,12 +21,15 @@ import java.util.UUID
 class SykmeldingService(private val sykmeldingProducer: SykmeldingInputProducer, private val sykmeldingRepository: SykmeldingRepository, private val tsmPdlClient: TsmPdlClient) {
 
     suspend fun opprettSykmelding(sykmelding: DollySykmelding): String {
-
-        validateSykmelding(sykmelding)
-
+        if (sykmelding.ident.length != 11) {
+            throw SykmeldingValidationException("fnr må vere 11 siffer. Lengde: ${sykmelding.ident.length}")
+        }
+        val person = tsmPdlClient.getPerson(sykmelding.ident)
+        validateSykmelding(sykmelding, person)
+        val personNavn = person?.navn ?: throw SykmeldingValidationException("Personen har ikke navn i pdl")
         val sykmeldingId = UUID.randomUUID().toString()
 
-        val sykmeldingRecord = mapToSykmeldingRecord(sykmeldingId, sykmelding)
+        val sykmeldingRecord = mapToSykmeldingRecord(sykmeldingId, sykmelding, personNavn)
 
         sykmeldingRepository.saveSykmelding(sykmeldingId, sykmelding.ident, sykmeldingRecord)
         withContext(Dispatchers.IO) {
@@ -35,14 +39,16 @@ class SykmeldingService(private val sykmeldingProducer: SykmeldingInputProducer,
         return sykmeldingId
     }
 
-    private suspend fun validateSykmelding(sykmelding: DollySykmelding) {
-        if (sykmelding.ident.length != 11) {
-            throw SykmeldingValidationException("fnr må vere 11 siffer. Lengde: ${sykmelding.ident.length}")
-        }
-        val personExists = tsmPdlClient.personExists(ident = sykmelding.ident)
+    private suspend fun validateSykmelding(sykmelding: DollySykmelding, person: TsmPdlResponse?) {
 
-        if (!personExists) {
+        if (person == null) {
             throw SykmeldingValidationException("Fant ikke person i PDL")
+        }
+        if (person.navn == null) {
+            throw SykmeldingValidationException("Personen har ikke navn i pdl")
+        }
+        if (person.falskIdent || person.doed) {
+            throw SykmeldingValidationException("Personen er doed eller har falsk ident")
         }
 
         if (sykmelding.aktivitet.any { it.grad != null && it.grad !in 1..99 }) {

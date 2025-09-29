@@ -24,7 +24,7 @@ import no.nav.tsm.sykmelding.model.DollySykmelding
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 
-fun mapToSykmeldingRecord(sykmeldingId: String, sykmelding: DollySykmelding): SykmeldingRecord {
+fun mapToSykmeldingRecord(sykmeldingId: String, sykmelding: DollySykmelding, navn: no.nav.tsm.`tsm-pdl`.Navn): SykmeldingRecord {
     return SykmeldingRecord(
         metadata = Digital("223456789"),
         sykmelding = DigitalSykmelding(
@@ -35,7 +35,7 @@ fun mapToSykmeldingRecord(sykmeldingId: String, sykmelding: DollySykmelding): Sy
             ),
             pasient = Pasient(
                 fnr = sykmelding.ident,
-                navn = null,
+                navn = Navn(fornavn = navn.fornavn, mellomnavn = navn.mellomnavn, etternavn = navn.etternavn),
                 navKontor = null,
                 navnFastlege = null,
                 kontaktinfo = emptyList()
@@ -63,7 +63,7 @@ fun mapToSykmeldingRecord(sykmeldingId: String, sykmelding: DollySykmelding): Sy
                 kontaktinfo = emptyList(),
             ),
             sykmelder = Sykmelder(
-                ids = listOf(PersonId(type = PersonIdType.HPR, id = "565562871")),
+                ids = listOf(PersonId(type = PersonIdType.HPR, id = "565562871"), PersonId(type = PersonIdType.FNR, id = "16889298166")),
                 helsepersonellKategori = HelsepersonellKategori.LEGE,
             ),
             arbeidsgiver = IngenArbeidsgiver(),
