@@ -2,6 +2,8 @@ package no.nav.tsm.sykmelding.mapper
 
 import no.nav.tsm.sykmelding.input.core.model.AktivitetIkkeMulig
 import no.nav.tsm.sykmelding.input.core.model.Behandler
+import no.nav.tsm.sykmelding.input.core.model.DiagnoseInfo
+import no.nav.tsm.sykmelding.input.core.model.DiagnoseSystem
 import no.nav.tsm.sykmelding.input.core.model.DigitalSykmelding
 import no.nav.tsm.sykmelding.input.core.model.DigitalSykmeldingMetadata
 import no.nav.tsm.sykmelding.input.core.model.Gradert
@@ -39,7 +41,11 @@ fun mapToSykmeldingRecord(sykmeldingId: String, sykmelding: DollySykmelding): Sy
                 kontaktinfo = emptyList()
             ),
             medisinskVurdering = MedisinskVurdering(
-                hovedDiagnose = null,
+                hovedDiagnose = DiagnoseInfo(
+                    DiagnoseSystem.ICPC2,
+                    kode = "R80",
+                    tekst = "Influensa"
+                ),
                 biDiagnoser = null,
                 yrkesskade = null,
                 syketilfelletStartDato = null,
