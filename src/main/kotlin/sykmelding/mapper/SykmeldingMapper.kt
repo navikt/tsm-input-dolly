@@ -51,13 +51,13 @@ fun mapToSykmeldingRecord(sykmeldingId: String, sykmelding: DollySykmelding): Sy
                 toAktivitet(it)
             },
             behandler = Behandler(
-                navn = Navn(fornavn = "Ola", mellomnavn = "Norman", etternavn = "Hansen"),
+                navn = Navn(fornavn = "Overmodig", mellomnavn = null, etternavn = "Jekk"),
                 adresse = null,
-                ids = listOf(PersonId(type = PersonIdType.HPR, id = "9144889")),
+                ids = listOf(PersonId(type = PersonIdType.HPR, id = "565562871")),
                 kontaktinfo = emptyList(),
             ),
             sykmelder = Sykmelder(
-                ids = listOf(PersonId(type = PersonIdType.HPR, id = "9144889")),
+                ids = listOf(PersonId(type = PersonIdType.HPR, id = "565562871")),
                 helsepersonellKategori = HelsepersonellKategori.LEGE,
             ),
             arbeidsgiver = IngenArbeidsgiver(),

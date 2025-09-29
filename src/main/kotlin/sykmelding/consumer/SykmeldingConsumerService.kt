@@ -23,7 +23,6 @@ class SykmeldingConsumerService(
     suspend fun start() = coroutineScope {
         logger.info("Starting kafka consumer")
         consumer.subscribe(listOf(sykmeldingTopic))
-
         try {
             while (isActive) {
                 val records = consumer.poll(Duration.ofMillis(1000))
