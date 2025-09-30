@@ -1,6 +1,7 @@
 package no.nav.tsm.sykmelding.mapper
 
 import no.nav.tsm.sykmelding.input.core.model.AktivitetIkkeMulig
+import no.nav.tsm.sykmelding.input.core.model.AvsenderSystem
 import no.nav.tsm.sykmelding.input.core.model.Behandler
 import no.nav.tsm.sykmelding.input.core.model.DiagnoseInfo
 import no.nav.tsm.sykmelding.input.core.model.DiagnoseSystem
@@ -32,6 +33,7 @@ fun mapToSykmeldingRecord(sykmeldingId: String, sykmelding: DollySykmelding, nav
             metadata = DigitalSykmeldingMetadata(
                 mottattDato = OffsetDateTime.now(ZoneOffset.UTC),
                 genDate = OffsetDateTime.now(ZoneOffset.UTC),
+                avsenderSystem = AvsenderSystem("Dolly", "1"),
             ),
             pasient = Pasient(
                 fnr = sykmelding.ident,
