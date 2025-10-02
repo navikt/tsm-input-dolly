@@ -39,7 +39,7 @@ class SykmeldingService(private val sykmeldingProducer: SykmeldingInputProducer,
         return sykmeldingId
     }
 
-    private suspend fun validateSykmelding(sykmelding: DollySykmelding, person: TsmPdlResponse?) {
+    private fun validateSykmelding(sykmelding: DollySykmelding, person: TsmPdlResponse?) {
 
         if (person == null) {
             throw SykmeldingValidationException("Fant ikke person i PDL")
