@@ -105,7 +105,7 @@ fun Application.sykmeldingModules() = module {
     single<Consumer<String, String>> {
         val env = get<Environment>()
         val kafkaProperties = env.kafkaConfig
-        kafkaProperties[ConsumerConfig.GROUP_ID_CONFIG] = "tsm-input-dolly-consumer"
+        kafkaProperties[ConsumerConfig.GROUP_ID_CONFIG] = "tsm-input-dolly"
         kafkaProperties[ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG] = StringDeserializer::class.java
         kafkaProperties[ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG] = ByteArrayDeserializer::class.java
         kafkaProperties[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = "earliest"
@@ -117,7 +117,7 @@ fun Application.sykmeldingModules() = module {
     single { SykmeldingService(get(), get(), get()) }
 }
 
-fun Application.configurefConsumer() {
+fun Application.configureConsumer() {
     val consumerService by inject<SykmeldingConsumerService>()
     val scope = CoroutineScope(Dispatchers.IO)
     monitor.subscribe(ApplicationStarted) {

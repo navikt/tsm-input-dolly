@@ -12,6 +12,16 @@ spec:
     min: 1
     max: 2
     cpuThresholdPercentage: 90
+  gcp:
+    sqlInstances:
+      - type: POSTGRES_18
+        name: tsm-input-dolly
+        cascadingDelete: false
+        databases:
+          - name: tsm-input-dolly
+        diskAutoresize: false
+        diskType: SSD
+        tier: db-f1-micro
   postgres:
     cluster:
       name: tsm-input-dolly-postgres-cluster
