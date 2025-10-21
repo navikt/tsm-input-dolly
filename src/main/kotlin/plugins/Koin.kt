@@ -117,7 +117,7 @@ fun Application.sykmeldingModules() = module {
     single { SykmeldingService(get(), get(), get()) }
 }
 
-fun Application.configureConsumer() {
+fun Application.configurefConsumer() {
     val consumerService by inject<SykmeldingConsumerService>()
     val scope = CoroutineScope(Dispatchers.IO)
     monitor.subscribe(ApplicationStarted) {

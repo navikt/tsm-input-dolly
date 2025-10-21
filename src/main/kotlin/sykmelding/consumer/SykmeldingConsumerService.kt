@@ -32,7 +32,6 @@ class SykmeldingConsumerService(
             }
         } finally {
             consumer.unsubscribe()
-            consumer.close()
             logger.info("Stopped kafka consumer")
         }
     }
