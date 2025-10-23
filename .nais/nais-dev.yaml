@@ -1,3 +1,17 @@
+---
+apiVersion: data.nais.io/v1
+kind: Postgres
+metadata:
+  name: tsm-input-dolly-postgres-cluster
+  namespace: tsm
+spec:
+  cluster:
+    majorVersion: "17"
+    resources:
+      cpu: 50m
+      diskSize: 1Gi
+      memory: 1G
+---
 apiVersion: nais.io/v1alpha1
 kind: Application
 metadata:
@@ -23,13 +37,7 @@ spec:
         diskType: SSD
         tier: db-f1-micro
   postgres:
-    cluster:
-      name: tsm-input-dolly-postgres-cluster
-      majorVersion: "17"
-      resources:
-        cpu: 50m
-        diskSize: 1Gi
-        memory: 1G
+    clusterName: tsm-input-dolly-postgres-cluster
   filesFrom:
     - emptyDir:
         medium: Memory
