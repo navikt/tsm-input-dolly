@@ -13,60 +13,27 @@ import no.nav.tsm.sykmelding.input.core.model.MedisinskVurdering
 import no.nav.tsm.sykmelding.input.core.model.Pasient
 import no.nav.tsm.sykmelding.input.core.model.RuleType
 import no.nav.tsm.sykmelding.input.core.model.Sykmelder
-import no.nav.tsm.sykmelding.input.core.model.SykmeldingMetadata
 import no.nav.tsm.sykmelding.input.core.model.SykmeldingRecord
 import no.nav.tsm.sykmelding.input.core.model.ValidationResult
-import no.nav.tsm.sykmelding.input.core.model.XmlSykmelding
 import no.nav.tsm.sykmelding.input.core.model.metadata.Digital
-import no.nav.tsm.sykmelding.input.core.model.metadata.EmottakEnkel
 import no.nav.tsm.sykmelding.input.core.model.metadata.HelsepersonellKategori
-import no.nav.tsm.sykmelding.input.core.model.metadata.Meldingstype
-import no.nav.tsm.sykmelding.input.core.model.metadata.MessageInfo
 import no.nav.tsm.sykmelding.input.core.model.metadata.Navn
-import no.nav.tsm.sykmelding.input.core.model.metadata.Organisasjon
-import no.nav.tsm.sykmelding.input.core.model.metadata.OrganisasjonsType
 import no.nav.tsm.sykmelding.input.core.model.metadata.PersonId
 import no.nav.tsm.sykmelding.input.core.model.metadata.PersonIdType
 import no.nav.tsm.sykmelding.model.Aktivitet
 import no.nav.tsm.sykmelding.model.DollySykmelding
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
-import java.util.UUID
 
 fun mapToSykmeldingRecord(sykmeldingId: String, sykmelding: DollySykmelding, navn: no.nav.tsm.`tsm-pdl`.Navn): SykmeldingRecord {
-    val genDate = OffsetDateTime.now(ZoneOffset.UTC)
     return SykmeldingRecord(
-        metadata = EmottakEnkel(
-            msgInfo = MessageInfo(Meldingstype.SYKMELDING, genDate, UUID.randomUUID().toString(), null),
-            sender = Organisasjon(
-                navn = "Dolly",
-                type = OrganisasjonsType.IKKE_OPPGITT,
-                emptyList(),
-                null,
-                null,
-                null,
-                null,
-            ),
-            receiver = Organisasjon(
-                navn = "NAV",
-                type = OrganisasjonsType.IKKE_OPPGITT,
-                emptyList(),
-                null,
-                null,
-                null,
-                null,
-            ),
-            null,
-        ),
-        sykmelding = XmlSykmelding(
+        metadata = Digital("223456789"),
+        sykmelding = DigitalSykmelding(
             id = sykmeldingId,
-            metadata = SykmeldingMetadata(
-                mottattDato = genDate,
-                genDate = genDate,
+            metadata = DigitalSykmeldingMetadata(
+                mottattDato = OffsetDateTime.now(ZoneOffset.UTC),
+                genDate = OffsetDateTime.now(ZoneOffset.UTC),
                 avsenderSystem = AvsenderSystem("Dolly", "1"),
-                behandletTidspunkt = genDate,
-                regelsettVersjon = "3",
-                UUID.randomUUID().toString()
             ),
             pasient = Pasient(
                 fnr = sykmelding.ident,
@@ -104,9 +71,6 @@ fun mapToSykmeldingRecord(sykmeldingId: String, sykmelding: DollySykmelding, nav
             arbeidsgiver = IngenArbeidsgiver(),
             tilbakedatering = null,
             bistandNav = null,
-            prognose = null,
-            utdypendeOpplysninger = null,
-            tiltak = null
         ),
         validation = ValidationResult(
             status = RuleType.OK,
