@@ -31,6 +31,7 @@ import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.common.serialization.ByteArrayDeserializer
 import org.apache.kafka.common.serialization.StringDeserializer
+import org.koin.core.qualifier.StringQualifier
 import org.koin.dsl.module
 import org.koin.ktor.ext.inject
 import org.koin.ktor.plugin.Koin
@@ -73,7 +74,16 @@ fun Application.sykmeldingModules() = module {
     single {
         createEnvironment()
     }
-    single<DataSource> {
+    single<DataSource>(StringQualifier("cloud-sql")) {
+        val environment = get<Environment>()
+        val url = environment.jdbcUrl
+
+        PGSimpleDataSource().apply {
+            setURL(url)
+        }
+    }
+
+    single<DataSource>(StringQualifier("postgres")) {
         val environment = get<Environment>()
         val url = environment.jdbcUrl
 
@@ -86,7 +96,8 @@ fun Application.sykmeldingModules() = module {
         sykmeldingObjectMapper
     }
 
-    single { SykmeldingRepository(get(), get()) }
+    single(StringQualifier("cloud-sql")) { SykmeldingRepository(get(StringQualifier("cloud-sql")), get()) }
+    single(StringQualifier("postgres")) { SykmeldingRepository(get(StringQualifier("postgres")), get()) }
 
     single {
         val env = get<Environment>()
@@ -102,7 +113,7 @@ fun Application.sykmeldingModules() = module {
         }
     }
 
-    single<Consumer<String, String>> {
+    single<Consumer<String, String>>(StringQualifier("tsm-input-dolly")) {
         val env = get<Environment>()
         val kafkaProperties = env.kafkaConfig
         kafkaProperties[ConsumerConfig.GROUP_ID_CONFIG] = "tsm-input-dolly"
@@ -113,24 +124,47 @@ fun Application.sykmeldingModules() = module {
         KafkaConsumer(kafkaProperties)
     }
 
-    single { SykmeldingConsumerService(get(), get(), get<Environment>().sykmeldingTopic) }
-    single { SykmeldingService(get(), get(), get()) }
+    single<Consumer<String, String>>(StringQualifier("tsm-input-dolly-consumer")) {
+        val env = get<Environment>()
+        val kafkaProperties = env.kafkaConfig
+        kafkaProperties[ConsumerConfig.GROUP_ID_CONFIG] = "tsm-input-dolly-consumer"
+        kafkaProperties[ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG] = StringDeserializer::class.java
+        kafkaProperties[ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG] = ByteArrayDeserializer::class.java
+        kafkaProperties[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = "earliest"
+        kafkaProperties[ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG] = "true"
+        KafkaConsumer(kafkaProperties)
+    }
+
+    single(StringQualifier("tsm-input-dolly")) { SykmeldingConsumerService(get(StringQualifier("tsm-input-dolly")), get(StringQualifier("cloud-sql")), get<Environment>().sykmeldingTopic, ) }
+    single(StringQualifier("tsm-input-dolly-consumer")) { SykmeldingConsumerService(get(StringQualifier("tsm-input-dolly-consumer")), get(StringQualifier("postgres")), get<Environment>().sykmeldingTopic,) }
+    single { SykmeldingService(get(), get(StringQualifier("cloud-sql")), get()) }
 }
 
 fun Application.configureConsumer() {
-    val consumerService by inject<SykmeldingConsumerService>()
+    val firstConsumer by inject<SykmeldingConsumerService>(StringQualifier("tsm-input-dolly"))
+    val secondConsumer by inject<SykmeldingConsumerService>(StringQualifier("tsm-input-dolly-consumer"))
     val scope = CoroutineScope(Dispatchers.IO)
     monitor.subscribe(ApplicationStarted) {
         log.info("Starting kafka consumer")
         scope.launch {
             while(isActive) {
-                try { consumerService.start() }
+                try { firstConsumer.start() }
                 catch (ex: Exception) {
                     log.error("Error running consumer", ex)
                     delay(10.seconds.toJavaDuration())
                 }
             }
         }
+        scope.launch {
+            while(isActive) {
+                try { secondConsumer.start() }
+                catch (ex: Exception) {
+                    log.error("Error running consumer", ex)
+                    delay(10.seconds.toJavaDuration())
+                }
+            }
+        }
+
     }
 
     monitor.subscribe(ApplicationStopping) {

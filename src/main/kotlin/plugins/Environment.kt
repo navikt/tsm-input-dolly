@@ -13,6 +13,7 @@ class Environment (
     val kafkaConfig: Properties,
     val sykmeldingTopic: String,
     val jdbcUrl: String,
+    val postgresJdbcUrl: String,
     val tsmPdlScope: String,
     val tsmPdlUrl: String,
     val texasUrl: String,
@@ -47,6 +48,7 @@ fun Application.createEnvironment(): Environment {
         },
         sykmeldingTopic = "tsm.sykmeldinger",
         jdbcUrl = environment.config.property("database.url").getString(),
+        postgresJdbcUrl = environment.config.property("database.postgres.url").getString(),
         tsmPdlUrl = "http://tsm-pdl-cache",
         tsmPdlScope = "api://dev-gcp.tsm.tsm-pdl-cache/.default",
         texasUrl = when(runEnvironment) {
