@@ -15,7 +15,6 @@ class ApplicationTest {
         environment {
             config = MapApplicationConfig(
                 "database.url" to postgreSQLContainer.jdbcUrl,
-                "database.postgres.url" to postgreSQLContainer.jdbcUrl,
             )
         }
         application {
