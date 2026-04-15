@@ -10,8 +10,9 @@ import no.nav.tsm.sykmelding.input.core.model.sykmeldingObjectMapper
 import no.nav.tsm.sykmelding.input.producer.SykmeldingInputProducer
 import no.nav.tsm.sykmelding.model.Aktivitet
 import no.nav.tsm.sykmelding.model.DollySykmelding
+import no.nav.tsm.sykmelding.model.SykmeldingType
 import no.nav.tsm.sykmelding.repository.SykmeldingRepository
-import no.nav.tsm.sykmelding.testcontainers.PostgresSQL.Companion.postgreSQLContainer
+import no.nav.tsm.sykmelding.testcontainers.PostgresSQL.Companion.postgres
 import no.nav.tsm.`tsm-pdl`.Navn
 import no.nav.tsm.`tsm-pdl`.TsmPdlClient
 import no.nav.tsm.`tsm-pdl`.TsmPdlResponse
@@ -41,9 +42,9 @@ class SykmeldingServiceTest {
     @BeforeTest
     fun setup() {
         dataSource = PGSimpleDataSource().apply {
-            setURL(postgreSQLContainer.jdbcUrl)
-            setUser(postgreSQLContainer.username)
-            setPassword(postgreSQLContainer.password)
+            setURL(postgres.jdbcUrl)
+            setUser(postgres.username)
+            setPassword(postgres.password)
         }
 
         val flyway = Flyway.configure()
@@ -222,6 +223,176 @@ class SykmeldingServiceTest {
         )
 
         assertDoesNotThrow { service.opprettSykmelding(dollySykmelding) }
+    }
+
+    @Test
+    fun `avventende saves and can be read back with correct type`() = runBlocking {
+        val dollySykmelding = DollySykmelding(
+            type = SykmeldingType.AVVENTENDE,
+            ident = "12345678901",
+            aktivitet = listOf(Aktivitet(
+                fom = LocalDate.of(2025, 9, 10),
+                tom = LocalDate.of(2025, 9, 20),
+            ))
+        )
+
+        val sykmeldingId = service.opprettSykmelding(dollySykmelding)
+        val response = service.hentSykmelding(sykmeldingId)
+
+        assertNotNull(response)
+        assertEquals(SykmeldingType.AVVENTENDE, response.type)
+        assertEquals(1, response.aktivitet.size)
+    }
+
+    @Test
+    fun `behandlingsdager saves and can be read back with correct type`() = runBlocking {
+        val dollySykmelding = DollySykmelding(
+            type = SykmeldingType.BEHANDLINGSDAGER,
+            ident = "12345678901",
+            aktivitet = listOf(Aktivitet(
+                fom = LocalDate.of(2025, 9, 10),
+                tom = LocalDate.of(2025, 9, 20),
+            ))
+        )
+
+        val sykmeldingId = service.opprettSykmelding(dollySykmelding)
+        val response = service.hentSykmelding(sykmeldingId)
+
+        assertNotNull(response)
+        assertEquals(SykmeldingType.BEHANDLINGSDAGER, response.type)
+    }
+
+    @Test
+    fun `reisetilskudd saves and can be read back with correct type`() = runBlocking {
+        val dollySykmelding = DollySykmelding(
+            type = SykmeldingType.REISETILSKUDD,
+            ident = "12345678901",
+            aktivitet = listOf(Aktivitet(
+                fom = LocalDate.of(2025, 9, 10),
+                tom = LocalDate.of(2025, 9, 20),
+            ))
+        )
+
+        val sykmeldingId = service.opprettSykmelding(dollySykmelding)
+        val response = service.hentSykmelding(sykmeldingId)
+
+        assertNotNull(response)
+        assertEquals(SykmeldingType.REISETILSKUDD, response.type)
+    }
+
+    @Test
+    fun `vanlig gradert with reisetilskudd preserves flag through round trip`() = runBlocking {
+        val dollySykmelding = DollySykmelding(
+            type = SykmeldingType.VANLIG,
+            ident = "12345678901",
+            aktivitet = listOf(Aktivitet(
+                fom = LocalDate.of(2025, 9, 10),
+                tom = LocalDate.of(2025, 9, 20),
+                grad = 50,
+                reisetilskudd = true,
+            ))
+        )
+
+        val sykmeldingId = service.opprettSykmelding(dollySykmelding)
+        val response = service.hentSykmelding(sykmeldingId)
+
+        assertNotNull(response)
+        assertEquals(SykmeldingType.VANLIG, response.type)
+        assertEquals(50, response.aktivitet.first().grad)
+        assertEquals(true, response.aktivitet.first().reisetilskudd)
+    }
+
+    @Test
+    fun `avventende with multiple aktivitet throws`() = runTest {
+        val dollySykmelding = DollySykmelding(
+            type = SykmeldingType.AVVENTENDE,
+            ident = "12345678901",
+            aktivitet = listOf(
+                Aktivitet(fom = LocalDate.of(2025, 9, 1), tom = LocalDate.of(2025, 9, 14)),
+                Aktivitet(fom = LocalDate.of(2025, 9, 15), tom = LocalDate.of(2025, 9, 30)),
+            )
+        )
+
+        val exception = assertThrows<SykmeldingValidationException> { service.opprettSykmelding(dollySykmelding) }
+        assertEquals("AVVENTENDE sykmelding må ha nøyaktig én aktivitet", exception.message)
+    }
+
+    @Test
+    fun `behandlingsdager with multiple aktivitet throws`() = runTest {
+        val dollySykmelding = DollySykmelding(
+            type = SykmeldingType.BEHANDLINGSDAGER,
+            ident = "12345678901",
+            aktivitet = listOf(
+                Aktivitet(fom = LocalDate.of(2025, 9, 1), tom = LocalDate.of(2025, 9, 14)),
+                Aktivitet(fom = LocalDate.of(2025, 9, 15), tom = LocalDate.of(2025, 9, 30)),
+            )
+        )
+
+        val exception = assertThrows<SykmeldingValidationException> { service.opprettSykmelding(dollySykmelding) }
+        assertEquals("BEHANDLINGSDAGER sykmelding må ha nøyaktig én aktivitet", exception.message)
+    }
+
+    @Test
+    fun `reisetilskudd with multiple aktivitet throws`() = runTest {
+        val dollySykmelding = DollySykmelding(
+            type = SykmeldingType.REISETILSKUDD,
+            ident = "12345678901",
+            aktivitet = listOf(
+                Aktivitet(fom = LocalDate.of(2025, 9, 1), tom = LocalDate.of(2025, 9, 14)),
+                Aktivitet(fom = LocalDate.of(2025, 9, 15), tom = LocalDate.of(2025, 9, 30)),
+            )
+        )
+
+        val exception = assertThrows<SykmeldingValidationException> { service.opprettSykmelding(dollySykmelding) }
+        assertEquals("REISETILSKUDD sykmelding må ha nøyaktig én aktivitet", exception.message)
+    }
+
+    @Test
+    fun `avventende with grad set throws`() = runTest {
+        val dollySykmelding = DollySykmelding(
+            type = SykmeldingType.AVVENTENDE,
+            ident = "12345678901",
+            aktivitet = listOf(Aktivitet(
+                fom = LocalDate.of(2025, 9, 10),
+                tom = LocalDate.of(2025, 9, 20),
+                grad = 50,
+            ))
+        )
+
+        val exception = assertThrows<SykmeldingValidationException> { service.opprettSykmelding(dollySykmelding) }
+        assertEquals("grad og reisetilskudd kan kun brukes for VANLIG sykmelding", exception.message)
+    }
+
+    @Test
+    fun `behandlingsdager with reisetilskudd flag throws`() = runTest {
+        val dollySykmelding = DollySykmelding(
+            type = SykmeldingType.BEHANDLINGSDAGER,
+            ident = "12345678901",
+            aktivitet = listOf(Aktivitet(
+                fom = LocalDate.of(2025, 9, 10),
+                tom = LocalDate.of(2025, 9, 20),
+                reisetilskudd = true,
+            ))
+        )
+
+        val exception = assertThrows<SykmeldingValidationException> { service.opprettSykmelding(dollySykmelding) }
+        assertEquals("grad og reisetilskudd kan kun brukes for VANLIG sykmelding", exception.message)
+    }
+
+    @Test
+    fun `vanlig with reisetilskudd but no grad throws`() = runTest {
+        val dollySykmelding = DollySykmelding(
+            type = SykmeldingType.VANLIG,
+            ident = "12345678901",
+            aktivitet = listOf(Aktivitet(
+                fom = LocalDate.of(2025, 9, 10),
+                tom = LocalDate.of(2025, 9, 20),
+                reisetilskudd = true,
+            ))
+        )
+
+        val exception = assertThrows<SykmeldingValidationException> { service.opprettSykmelding(dollySykmelding) }
+        assertEquals("reisetilskudd kan kun settes sammen med grad", exception.message)
     }
 
     @Test

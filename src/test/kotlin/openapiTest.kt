@@ -20,8 +20,8 @@ import no.nav.tsm.sykmelding.model.Aktivitet
 import no.nav.tsm.sykmelding.model.DollySykmelding
 import no.nav.tsm.sykmelding.model.DollySykmeldingResponse
 import no.nav.tsm.sykmelding.model.DollySykmeldingerResponse
+import no.nav.tsm.sykmelding.model.SykmeldingType
 import org.hamcrest.CoreMatchers.equalTo
-import org.junit.Assert
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.TestInstance
 import org.koin.dsl.module
@@ -29,6 +29,7 @@ import org.koin.ktor.plugin.Koin
 import org.koin.logger.slf4jLogger
 import java.time.LocalDate
 import kotlin.test.Test
+import kotlin.test.assertEquals
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class OpenApiTest {
@@ -125,7 +126,7 @@ class OpenApiTest {
                 .extract().asString().let {
                     sykmeldingObjectMapper.readValue(it, DollySykmeldingResponse::class.java)
                 }
-            Assert.assertEquals(dollySykmeldingResponse, result)
+            assertEquals(dollySykmeldingResponse, result)
         }
 
     @Test
@@ -155,7 +156,7 @@ class OpenApiTest {
             .extract().asString().let {
                 sykmeldingObjectMapper.readValue(it, DollySykmeldingerResponse::class.java)
             }
-        Assert.assertEquals(dollySykmeldingerResponse, result)
+        assertEquals(dollySykmeldingerResponse, result)
 
     }
 
@@ -248,7 +249,7 @@ class OpenApiTest {
             .extract().asString().let {
             sykmeldingObjectMapper.readValue(it, DollySykmeldingResponse::class.java)
         }
-        Assert.assertEquals(dollySykmeldingResponse, result)
+        assertEquals(dollySykmeldingResponse, result)
 
     }
 
@@ -328,6 +329,237 @@ class OpenApiTest {
             .post("/api/sykmelding")
             .then()
             .statusCode(400)
+    }
+
+    @Test
+    fun `Test POST avventende sykmelding 200`() {
+        val sykmeldingId = "123"
+        coEvery { sykmeldingService.opprettSykmelding(any()) } returns sykmeldingId
+        val dollySykmelding = DollySykmelding(
+            type = SykmeldingType.AVVENTENDE,
+            ident = "12345678912",
+            aktivitet = listOf(Aktivitet(
+                fom = LocalDate.of(2025, 9, 10),
+                tom = LocalDate.of(2025, 9, 20),
+            ))
+        )
+        RestAssured
+            .given()
+            .filter(filter)
+            .contentType("application/json")
+            .body(sykmeldingObjectMapper.writeValueAsString(dollySykmelding))
+            .post("/api/sykmelding")
+            .then()
+            .statusCode(200)
+    }
+
+    @Test
+    fun `Test POST behandlingsdager sykmelding 200`() {
+        val sykmeldingId = "123"
+        coEvery { sykmeldingService.opprettSykmelding(any()) } returns sykmeldingId
+        val dollySykmelding = DollySykmelding(
+            type = SykmeldingType.BEHANDLINGSDAGER,
+            ident = "12345678912",
+            aktivitet = listOf(Aktivitet(
+                fom = LocalDate.of(2025, 9, 10),
+                tom = LocalDate.of(2025, 9, 20),
+            ))
+        )
+        RestAssured
+            .given()
+            .filter(filter)
+            .contentType("application/json")
+            .body(sykmeldingObjectMapper.writeValueAsString(dollySykmelding))
+            .post("/api/sykmelding")
+            .then()
+            .statusCode(200)
+    }
+
+    @Test
+    fun `Test POST reisetilskudd sykmelding 200`() {
+        val sykmeldingId = "123"
+        coEvery { sykmeldingService.opprettSykmelding(any()) } returns sykmeldingId
+        val dollySykmelding = DollySykmelding(
+            type = SykmeldingType.REISETILSKUDD,
+            ident = "12345678912",
+            aktivitet = listOf(Aktivitet(
+                fom = LocalDate.of(2025, 9, 10),
+                tom = LocalDate.of(2025, 9, 20),
+            ))
+        )
+        RestAssured
+            .given()
+            .filter(filter)
+            .contentType("application/json")
+            .body(sykmeldingObjectMapper.writeValueAsString(dollySykmelding))
+            .post("/api/sykmelding")
+            .then()
+            .statusCode(200)
+    }
+
+    @Test
+    fun `Test POST vanlig gradert med reisetilskudd 200`() {
+        val sykmeldingId = "123"
+        coEvery { sykmeldingService.opprettSykmelding(any()) } returns sykmeldingId
+        val dollySykmelding = DollySykmelding(
+            type = SykmeldingType.VANLIG,
+            ident = "12345678912",
+            aktivitet = listOf(Aktivitet(
+                fom = LocalDate.of(2025, 9, 10),
+                tom = LocalDate.of(2025, 9, 20),
+                grad = 50,
+                reisetilskudd = true,
+            ))
+        )
+        RestAssured
+            .given()
+            .filter(filter)
+            .contentType("application/json")
+            .body(sykmeldingObjectMapper.writeValueAsString(dollySykmelding))
+            .post("/api/sykmelding")
+            .then()
+            .statusCode(200)
+    }
+
+    @Test
+    fun `Test POST avventende with multiple aktivitet gives 400`() {
+        coEvery { sykmeldingService.opprettSykmelding(any()) } throws
+            SykmeldingValidationException("AVVENTENDE sykmelding må ha nøyaktig én aktivitet")
+        val dollySykmelding = DollySykmelding(
+            type = SykmeldingType.AVVENTENDE,
+            ident = "12345678912",
+            aktivitet = listOf(
+                Aktivitet(fom = LocalDate.of(2025, 9, 1), tom = LocalDate.of(2025, 9, 14)),
+                Aktivitet(fom = LocalDate.of(2025, 9, 15), tom = LocalDate.of(2025, 9, 30)),
+            )
+        )
+        RestAssured
+            .given()
+            .filter(filter)
+            .contentType("application/json")
+            .body(sykmeldingObjectMapper.writeValueAsString(dollySykmelding))
+            .post("/api/sykmelding")
+            .then()
+            .statusCode(400)
+            .body("message", equalTo("AVVENTENDE sykmelding må ha nøyaktig én aktivitet"))
+    }
+
+    @Test
+    fun `Test POST behandlingsdager with multiple aktivitet gives 400`() {
+        coEvery { sykmeldingService.opprettSykmelding(any()) } throws
+            SykmeldingValidationException("BEHANDLINGSDAGER sykmelding må ha nøyaktig én aktivitet")
+        val dollySykmelding = DollySykmelding(
+            type = SykmeldingType.BEHANDLINGSDAGER,
+            ident = "12345678912",
+            aktivitet = listOf(
+                Aktivitet(fom = LocalDate.of(2025, 9, 1), tom = LocalDate.of(2025, 9, 14)),
+                Aktivitet(fom = LocalDate.of(2025, 9, 15), tom = LocalDate.of(2025, 9, 30)),
+            )
+        )
+        RestAssured
+            .given()
+            .filter(filter)
+            .contentType("application/json")
+            .body(sykmeldingObjectMapper.writeValueAsString(dollySykmelding))
+            .post("/api/sykmelding")
+            .then()
+            .statusCode(400)
+            .body("message", equalTo("BEHANDLINGSDAGER sykmelding må ha nøyaktig én aktivitet"))
+    }
+
+    @Test
+    fun `Test POST reisetilskudd with multiple aktivitet gives 400`() {
+        coEvery { sykmeldingService.opprettSykmelding(any()) } throws
+            SykmeldingValidationException("REISETILSKUDD sykmelding må ha nøyaktig én aktivitet")
+        val dollySykmelding = DollySykmelding(
+            type = SykmeldingType.REISETILSKUDD,
+            ident = "12345678912",
+            aktivitet = listOf(
+                Aktivitet(fom = LocalDate.of(2025, 9, 1), tom = LocalDate.of(2025, 9, 14)),
+                Aktivitet(fom = LocalDate.of(2025, 9, 15), tom = LocalDate.of(2025, 9, 30)),
+            )
+        )
+        RestAssured
+            .given()
+            .filter(filter)
+            .contentType("application/json")
+            .body(sykmeldingObjectMapper.writeValueAsString(dollySykmelding))
+            .post("/api/sykmelding")
+            .then()
+            .statusCode(400)
+            .body("message", equalTo("REISETILSKUDD sykmelding må ha nøyaktig én aktivitet"))
+    }
+
+    @Test
+    fun `Test POST avventende with grad gives 400`() {
+        coEvery { sykmeldingService.opprettSykmelding(any()) } throws
+            SykmeldingValidationException("grad og reisetilskudd kan kun brukes for VANLIG sykmelding")
+        val dollySykmelding = DollySykmelding(
+            type = SykmeldingType.AVVENTENDE,
+            ident = "12345678912",
+            aktivitet = listOf(Aktivitet(
+                fom = LocalDate.of(2025, 9, 10),
+                tom = LocalDate.of(2025, 9, 20),
+                grad = 50,
+            ))
+        )
+        RestAssured
+            .given()
+            .filter(filter)
+            .contentType("application/json")
+            .body(sykmeldingObjectMapper.writeValueAsString(dollySykmelding))
+            .post("/api/sykmelding")
+            .then()
+            .statusCode(400)
+            .body("message", equalTo("grad og reisetilskudd kan kun brukes for VANLIG sykmelding"))
+    }
+
+    @Test
+    fun `Test POST behandlingsdager with reisetilskudd gives 400`() {
+        coEvery { sykmeldingService.opprettSykmelding(any()) } throws
+            SykmeldingValidationException("grad og reisetilskudd kan kun brukes for VANLIG sykmelding")
+        val dollySykmelding = DollySykmelding(
+            type = SykmeldingType.BEHANDLINGSDAGER,
+            ident = "12345678912",
+            aktivitet = listOf(Aktivitet(
+                fom = LocalDate.of(2025, 9, 10),
+                tom = LocalDate.of(2025, 9, 20),
+                reisetilskudd = true,
+            ))
+        )
+        RestAssured
+            .given()
+            .filter(filter)
+            .contentType("application/json")
+            .body(sykmeldingObjectMapper.writeValueAsString(dollySykmelding))
+            .post("/api/sykmelding")
+            .then()
+            .statusCode(400)
+            .body("message", equalTo("grad og reisetilskudd kan kun brukes for VANLIG sykmelding"))
+    }
+
+    @Test
+    fun `Test POST vanlig with reisetilskudd but no grad gives 400`() {
+        coEvery { sykmeldingService.opprettSykmelding(any()) } throws
+            SykmeldingValidationException("reisetilskudd kan kun settes sammen med grad")
+        val dollySykmelding = DollySykmelding(
+            type = SykmeldingType.VANLIG,
+            ident = "12345678912",
+            aktivitet = listOf(Aktivitet(
+                fom = LocalDate.of(2025, 9, 10),
+                tom = LocalDate.of(2025, 9, 20),
+                reisetilskudd = true,
+            ))
+        )
+        RestAssured
+            .given()
+            .filter(filter)
+            .contentType("application/json")
+            .body(sykmeldingObjectMapper.writeValueAsString(dollySykmelding))
+            .post("/api/sykmelding")
+            .then()
+            .statusCode(400)
+            .body("message", equalTo("reisetilskudd kan kun settes sammen med grad"))
     }
 
     @Test

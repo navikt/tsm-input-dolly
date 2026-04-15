@@ -9,7 +9,7 @@ import no.nav.tsm.sykmelding.input.core.model.sykmeldingObjectMapper
 import no.nav.tsm.sykmelding.mapper.mapToSykmeldingRecord
 import no.nav.tsm.sykmelding.model.Aktivitet
 import no.nav.tsm.sykmelding.model.DollySykmelding
-import no.nav.tsm.sykmelding.testcontainers.PostgresSQL.Companion.postgreSQLContainer
+import no.nav.tsm.sykmelding.testcontainers.PostgresSQL.Companion.postgres
 import no.nav.tsm.`tsm-pdl`.Navn
 import org.flywaydb.core.Flyway
 import org.postgresql.ds.PGSimpleDataSource
@@ -33,7 +33,7 @@ class SykmeldingRepositoryTest {
     @BeforeTest
     fun setup() {
         dataSource = PGSimpleDataSource().apply {
-            setURL(postgreSQLContainer.jdbcUrl)
+            setURL(postgres.jdbcUrl)
         }
 
         val flyway = Flyway.configure()

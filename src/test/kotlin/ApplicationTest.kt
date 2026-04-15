@@ -4,7 +4,7 @@ import io.ktor.client.request.get
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.config.MapApplicationConfig
 import io.ktor.server.testing.testApplication
-import no.nav.tsm.sykmelding.testcontainers.PostgresSQL.Companion.postgreSQLContainer
+import no.nav.tsm.sykmelding.testcontainers.PostgresSQL.Companion.postgres
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -14,7 +14,7 @@ class ApplicationTest {
     fun testRoot() = testApplication {
         environment {
             config = MapApplicationConfig(
-                "database.url" to postgreSQLContainer.jdbcUrl,
+                "database.url" to postgres.jdbcUrl,
             )
         }
         application {

@@ -3,7 +3,11 @@ package no.nav.tsm.sykmelding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import no.nav.tsm.sykmelding.exceptions.SykmeldingValidationException
+import no.nav.tsm.sykmelding.input.core.model.AktivitetIkkeMulig
+import no.nav.tsm.sykmelding.input.core.model.Avventende
+import no.nav.tsm.sykmelding.input.core.model.Behandlingsdager
 import no.nav.tsm.sykmelding.input.core.model.Gradert
+import no.nav.tsm.sykmelding.input.core.model.Reisetilskudd
 import no.nav.tsm.sykmelding.input.core.model.SykmeldingRecord
 import no.nav.tsm.sykmelding.input.producer.SykmeldingInputProducer
 import no.nav.tsm.sykmelding.mapper.mapToSykmeldingRecord
@@ -11,6 +15,7 @@ import no.nav.tsm.sykmelding.model.Aktivitet
 import no.nav.tsm.sykmelding.model.DollySykmelding
 import no.nav.tsm.sykmelding.model.DollySykmeldingResponse
 import no.nav.tsm.sykmelding.model.DollySykmeldingerResponse
+import no.nav.tsm.sykmelding.model.SykmeldingType
 import no.nav.tsm.sykmelding.repository.SykmeldingRepository
 import no.nav.tsm.`tsm-pdl`.TsmPdlClient
 import no.nav.tsm.`tsm-pdl`.TsmPdlResponse
@@ -51,9 +56,20 @@ class SykmeldingService(private val sykmeldingProducer: SykmeldingInputProducer,
             throw SykmeldingValidationException("Personen er doed eller har falsk ident")
         }
 
+        if (sykmelding.type != SykmeldingType.VANLIG && sykmelding.aktivitet.size != 1) {
+            throw SykmeldingValidationException("${sykmelding.type} sykmelding må ha nøyaktig én aktivitet")
+        }
+        if (sykmelding.type != SykmeldingType.VANLIG &&
+            sykmelding.aktivitet.any { it.grad != null || it.reisetilskudd }) {
+            throw SykmeldingValidationException("grad og reisetilskudd kan kun brukes for VANLIG sykmelding")
+        }
+        if (sykmelding.aktivitet.any { it.reisetilskudd && it.grad == null }) {
+            throw SykmeldingValidationException("reisetilskudd kan kun settes sammen med grad")
+        }
         if (sykmelding.aktivitet.any { it.grad != null && it.grad !in 1..99 }) {
             throw SykmeldingValidationException("Grad must be in rage 1-99")
         }
+
         var lastTom: LocalDate? = null
         sykmelding.aktivitet.sortedBy {
             it.fom
@@ -83,19 +99,34 @@ class SykmeldingService(private val sykmeldingProducer: SykmeldingInputProducer,
         return toDollySykmelding(sykmeldingRecord)
     }
 
-    private fun toDollySykmelding(sykmeldingRecord: SykmeldingRecord): DollySykmeldingResponse = DollySykmeldingResponse(
-        sykmeldingId = sykmeldingRecord.sykmelding.id,
-        ident = sykmeldingRecord.sykmelding.pasient.fnr,
-        aktivitet = sykmeldingRecord.sykmelding.aktivitet.map {
-            Aktivitet(
-                fom = it.fom,
-                tom = it.tom,
-                grad =if(it is Gradert) {
-                    it.grad
-                } else null
-            )
+    private fun toDollySykmelding(sykmeldingRecord: SykmeldingRecord): DollySykmeldingResponse {
+        val coreAktivitet = sykmeldingRecord.sykmelding.aktivitet
+        val type = when (coreAktivitet.first()) {
+            is Avventende -> SykmeldingType.AVVENTENDE
+            is Behandlingsdager -> SykmeldingType.BEHANDLINGSDAGER
+            is Reisetilskudd -> SykmeldingType.REISETILSKUDD
+            is Gradert, is AktivitetIkkeMulig -> SykmeldingType.VANLIG
         }
-    )
+        return DollySykmeldingResponse(
+            sykmeldingId = sykmeldingRecord.sykmelding.id,
+            type = type,
+            ident = sykmeldingRecord.sykmelding.pasient.fnr,
+            aktivitet = coreAktivitet.map { core ->
+                when (core) {
+                    is Gradert -> Aktivitet(
+                        fom = core.fom,
+                        tom = core.tom,
+                        grad = core.grad,
+                        reisetilskudd = core.reisetilskudd,
+                    )
+                    is AktivitetIkkeMulig -> Aktivitet(fom = core.fom, tom = core.tom)
+                    is Reisetilskudd -> Aktivitet(fom = core.fom, tom = core.tom)
+                    is Avventende -> Aktivitet(fom = core.fom, tom = core.tom)
+                    is Behandlingsdager -> Aktivitet(fom = core.fom, tom = core.tom)
+                }
+            }
+        )
+    }
 
     suspend fun hentSykmeldingByIdent(ident: String): DollySykmeldingerResponse {
         val sykmeldinger = sykmeldingRepository.getByIdent(ident).map { sykmeldingRecord ->

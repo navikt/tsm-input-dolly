@@ -39,11 +39,10 @@ dependencies {
     implementation(libs.postgres)
     implementation(libs.flyway.core)
     implementation(libs.flyway.postgresql)
-
+    testImplementation(libs.kotest.assertions)
     testImplementation(libs.ktor.server.test.host)
     testImplementation(libs.kotlin.test)
     testImplementation(libs.testcontainers.postgresql)
-    testImplementation(libs.testcontainers.junit.jupiter)
     testImplementation(libs.mockito.kotlin)
     testImplementation(libs.mockk)
     testImplementation(libs.kotlinx.coroutines.test)

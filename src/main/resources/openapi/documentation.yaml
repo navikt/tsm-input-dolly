@@ -80,6 +80,69 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Sykmelding'
+          examples:
+            vanlig_100_prosent:
+              summary: Vanlig sykmelding, 100% (uten grad)
+              value:
+                type: VANLIG
+                ident: "12345678912"
+                aktivitet:
+                  - fom: "2025-09-01"
+                    tom: "2025-09-14"
+            vanlig_gradert:
+              summary: Vanlig sykmelding, gradert 50%
+              value:
+                type: VANLIG
+                ident: "12345678912"
+                aktivitet:
+                  - fom: "2025-09-01"
+                    tom: "2025-09-14"
+                    grad: 50
+            vanlig_gradert_med_reisetilskudd:
+              summary: Vanlig sykmelding, gradert 50% med reisetilskudd
+              value:
+                type: VANLIG
+                ident: "12345678912"
+                aktivitet:
+                  - fom: "2025-09-01"
+                    tom: "2025-09-14"
+                    grad: 50
+                    reisetilskudd: true
+            vanlig_flere_perioder:
+              summary: Vanlig sykmelding med flere perioder
+              value:
+                type: VANLIG
+                ident: "12345678912"
+                aktivitet:
+                  - fom: "2025-09-01"
+                    tom: "2025-09-14"
+                  - fom: "2025-09-15"
+                    tom: "2025-09-30"
+                    grad: 50
+            avventende:
+              summary: Avventende sykmelding
+              value:
+                type: AVVENTENDE
+                ident: "12345678912"
+                aktivitet:
+                  - fom: "2025-09-01"
+                    tom: "2025-09-14"
+            behandlingsdager:
+              summary: Sykmelding med behandlingsdager
+              value:
+                type: BEHANDLINGSDAGER
+                ident: "12345678912"
+                aktivitet:
+                  - fom: "2025-09-01"
+                    tom: "2025-09-14"
+            reisetilskudd:
+              summary: Reisetilskudd (standalone)
+              value:
+                type: REISETILSKUDD
+                ident: "12345678912"
+                aktivitet:
+                  - fom: "2025-09-01"
+                    tom: "2025-09-14"
   responses:
     ErrorResponse:
       content:
@@ -115,15 +178,99 @@ components:
       pattern: "^[0-9]{11}$"
       example: "62858801562"
       description: "FNR eller DNR"
+    SykmeldingType:
+      type: string
+      enum:
+        - VANLIG
+        - AVVENTENDE
+        - BEHANDLINGSDAGER
+        - REISETILSKUDD
+      description: >
+        Type sykmelding. `VANLIG` støtter én eller flere aktiviteter (gradert og/eller
+        ikke-mulig, evt. med reisetilskudd). `AVVENTENDE`, `BEHANDLINGSDAGER` og
+        `REISETILSKUDD` er standalone typer med én enkelt aktivitet.
+    Grad:
+      type: integer
+      minimum: 1
+      maximum: 99
+      description: >
+        Grad av sykmelding i prosent (1-99). Uten grad tolkes aktiviteten som 100% sykmeldt.
+        Kun gyldig for `VANLIG` sykmelding.
+    Aktivitet:
+      type: object
+      description: >
+        En aktivitet i en sykmelding. For `VANLIG` sykmelding kan `grad` være satt (1-99)
+        for gradert sykmelding, ellers regnes aktiviteten som 100% sykmeldt. `reisetilskudd`
+        kan kun settes sammen med `grad`. For de andre sykmeldingstypene skal `grad` og
+        `reisetilskudd` ikke settes.
+      required:
+        - fom
+        - tom
+      properties:
+        fom:
+          $ref: '#/components/schemas/Date'
+        tom:
+          $ref: '#/components/schemas/Date'
+        grad:
+          $ref: '#/components/schemas/Grad'
+        reisetilskudd:
+          type: boolean
+          default: false
+          description: Reisetilskudd i tillegg til gradert sykmelding. Krever at `grad` er satt.
+      example:
+        fom: "2025-09-01"
+        tom: "2025-09-14"
+        grad: 50
+    Sykmelding:
+      type: object
+      description: >
+        Request for å opprette en sykmelding. `type` bestemmer hvordan `aktivitet`-listen
+        tolkes:
+
+        - `VANLIG`: én eller flere aktiviteter. Hver aktivitet kan være 100% (uten grad)
+          eller gradert (med grad 1-99). Gradert aktivitet kan i tillegg ha
+          `reisetilskudd = true`.
+        - `AVVENTENDE`: nøyaktig én aktivitet.
+        - `BEHANDLINGSDAGER`: nøyaktig én aktivitet.
+        - `REISETILSKUDD`: nøyaktig én aktivitet.
+
+        `grad` og `reisetilskudd` på en aktivitet kan kun brukes for `VANLIG`.
+      required:
+        - type
+        - ident
+        - aktivitet
+      properties:
+        type:
+          $ref: '#/components/schemas/SykmeldingType'
+        ident:
+          $ref: '#/components/schemas/Ident'
+        aktivitet:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/Aktivitet'
     SykmeldingResponse:
       type: object
+      description: >
+        Respons når en sykmelding opprettes eller hentes. Samme form som `Sykmelding` med
+        et ekstra `sykmeldingId`-felt.
+      required:
+        - sykmeldingId
+        - type
+        - ident
+        - aktivitet
       properties:
         sykmeldingId:
           $ref: '#/components/schemas/SykmeldingId'
-        aktivitet:
-          $ref: '#/components/schemas/AktivitetList'
+        type:
+          $ref: '#/components/schemas/SykmeldingType'
         ident:
           $ref: '#/components/schemas/Ident'
+        aktivitet:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/Aktivitet'
     SykmeldingerResponse:
       type: object
       properties:
@@ -131,36 +278,3 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/SykmeldingResponse'
-    Sykmelding:
-      type: object
-      properties:
-        ident:
-          $ref: '#/components/schemas/Ident'
-        aktivitet:
-          $ref: '#/components/schemas/AktivitetList'
-      required:
-        - ident
-        - aktivitet
-    AktivitetList:
-      type: array
-      items:
-        $ref: '#/components/schemas/Aktivitet'
-    Grad:
-      type: integer
-      minimum: 1
-      maximum: 99
-      nullable: true
-      description: valgfri grad av sykmelding i %. uten denne er den ansett til å være 100% sykmelding
-    Aktivitet:
-      type: object
-      example: { fom: "2025-01-01", tom: "2025-01-02"}
-      properties:
-        grad:
-          $ref: '#/components/schemas/Grad'
-        fom:
-          $ref: '#/components/schemas/Date'
-        tom:
-          $ref: '#/components/schemas/Date'
-      required:
-        - fom
-        - tom

@@ -33,6 +33,7 @@ fun Route.sykmeldingApi() {
             call.respond(
                 HttpStatusCode.OK, DollySykmeldingResponse(
                     sykmeldingId = sykmeldingId,
+                    type = sykmelding.type,
                     ident = sykmelding.ident,
                     aktivitet = sykmelding.aktivitet
                 )

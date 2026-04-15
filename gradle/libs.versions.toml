@@ -8,13 +8,15 @@ sykmeldingInput = "16"
 micrometer = "1.6.13"
 koinVersion = "4.1.1"
 postgresVersion = "42.7.7"
-testcontainerVersion = "1.21.3"
+testcontainerVersion = "2.0.3"
 mockkVersion = "1.14.5"
 mockitoVersion = "5.4.0"
 kotlinxCoroutinesTestVersion = "1.10.2"
 hamcrestVersion = "3.0"
 restAssuredVersion = "5.5.6"
 swaggerValidatorResetAssuredVersion = "2.45.1"
+kotest-assertions = "6.1.11"
+
 [libraries]
 ktor-server-content-negotiation = { module = "io.ktor:ktor-server-content-negotiation", version.ref = "ktor" }
 ktor-server-core = { module = "io.ktor:ktor-server-core", version.ref = "ktor" }
@@ -37,13 +39,12 @@ micrometer-registry-prometheus = { module = "io.micrometer:micrometer-registry-p
 postgres = { module = "org.postgresql:postgresql", version.ref = "postgresVersion" }
 flyway-core = { module = "org.flywaydb:flyway-core", version.ref = "flyway" }
 flyway-postgresql = { module = "org.flywaydb:flyway-database-postgresql", version.ref = "flyway" }
-
+kotest-assertions = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest-assertions" }
 tsm-sykmelding-input = { module = "no.nav.tsm.sykmelding:input", version.ref = "sykmeldingInput" }
 
 ktor-server-test-host = { module = "io.ktor:ktor-server-test-host", version.ref = "ktor" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
-testcontainers-postgresql = { module = "org.testcontainers:postgresql", version.ref = "testcontainerVersion" }
-testcontainers-junit-jupiter = { module = "org.testcontainers:junit-jupiter" , version.ref = "testcontainerVersion"}
+testcontainers-postgresql = { module = "org.testcontainers:testcontainers-postgresql", version.ref = "testcontainerVersion" }
 mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin" , version.ref = "mockitoVersion"}
 mockk = { module = "io.mockk:mockk" , version.ref = "mockkVersion"}
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test" , version.ref = "kotlinxCoroutinesTestVersion"}

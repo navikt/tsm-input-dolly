@@ -693,25 +693,26 @@
   "required" : [ "fom", "tom" ],
   "type" : "object",
   "properties" : {
-    "grad" : {
-      "$ref" : "#/components/schemas/Grad"
-    },
     "fom" : {
       "$ref" : "#/components/schemas/Date"
     },
     "tom" : {
       "$ref" : "#/components/schemas/Date"
+    },
+    "grad" : {
+      "$ref" : "#/components/schemas/Grad"
+    },
+    "reisetilskudd" : {
+      "type" : "boolean",
+      "description" : "Reisetilskudd i tillegg til gradert sykmelding. Krever at `grad` er satt.",
+      "default" : false
     }
   },
+  "description" : "En aktivitet i en sykmelding. For `VANLIG` sykmelding kan `grad` være satt (1-99) for gradert sykmelding, ellers regnes aktiviteten som 100% sykmeldt. `reisetilskudd` kan kun settes sammen med `grad`. For de andre sykmeldingstypene skal `grad` og `reisetilskudd` ikke settes.\n",
   "example" : {
-    "fom" : "2025-01-01",
-    "tom" : "2025-01-02"
-  }
-};
-            defs["AktivitetList"] = {
-  "type" : "array",
-  "items" : {
-    "$ref" : "#/components/schemas/Aktivitet"
+    "fom" : "2025-09-01",
+    "tom" : "2025-09-14",
+    "grad" : 50
   }
 };
             defs["Date"] = {
@@ -722,8 +723,7 @@
   "maximum" : 99,
   "minimum" : 1,
   "type" : "integer",
-  "description" : "valgfri grad av sykmelding i %. uten denne er den ansett til å være 100% sykmelding",
-  "nullable" : true
+  "description" : "Grad av sykmelding i prosent (1-99). Uten grad tolkes aktiviteten som 100% sykmeldt. Kun gyldig for `VANLIG` sykmelding.\n"
 };
             defs["Ident"] = {
   "pattern" : "^[0-9]{11}$",
@@ -740,33 +740,55 @@
   }
 };
             defs["Sykmelding"] = {
-  "required" : [ "aktivitet", "ident" ],
+  "required" : [ "aktivitet", "ident", "type" ],
   "type" : "object",
   "properties" : {
+    "type" : {
+      "$ref" : "#/components/schemas/SykmeldingType"
+    },
     "ident" : {
       "$ref" : "#/components/schemas/Ident"
     },
     "aktivitet" : {
-      "$ref" : "#/components/schemas/AktivitetList"
+      "minItems" : 1,
+      "type" : "array",
+      "items" : {
+        "$ref" : "#/components/schemas/Aktivitet"
+      }
     }
-  }
+  },
+  "description" : "Request for å opprette en sykmelding. `type` bestemmer hvordan `aktivitet`-listen tolkes:\n- `VANLIG`: én eller flere aktiviteter. Hver aktivitet kan være 100% (uten grad)\n  eller gradert (med grad 1-99). Gradert aktivitet kan i tillegg ha\n  `reisetilskudd = true`.\n- `AVVENTENDE`: nøyaktig én aktivitet. - `BEHANDLINGSDAGER`: nøyaktig én aktivitet. - `REISETILSKUDD`: nøyaktig én aktivitet.\n`grad` og `reisetilskudd` på en aktivitet kan kun brukes for `VANLIG`.\n"
 };
             defs["SykmeldingId"] = {
   "type" : "string"
 };
             defs["SykmeldingResponse"] = {
+  "required" : [ "aktivitet", "ident", "sykmeldingId", "type" ],
   "type" : "object",
   "properties" : {
     "sykmeldingId" : {
       "$ref" : "#/components/schemas/SykmeldingId"
     },
-    "aktivitet" : {
-      "$ref" : "#/components/schemas/AktivitetList"
+    "type" : {
+      "$ref" : "#/components/schemas/SykmeldingType"
     },
     "ident" : {
       "$ref" : "#/components/schemas/Ident"
+    },
+    "aktivitet" : {
+      "minItems" : 1,
+      "type" : "array",
+      "items" : {
+        "$ref" : "#/components/schemas/Aktivitet"
+      }
     }
-  }
+  },
+  "description" : "Respons når en sykmelding opprettes eller hentes. Samme form som `Sykmelding` med et ekstra `sykmeldingId`-felt.\n"
+};
+            defs["SykmeldingType"] = {
+  "type" : "string",
+  "description" : "Type sykmelding. `VANLIG` støtter én eller flere aktiviteter (gradert og/eller ikke-mulig, evt. med reisetilskudd). `AVVENTENDE`, `BEHANDLINGSDAGER` og `REISETILSKUDD` er standalone typer med én enkelt aktivitet.\n",
+  "enum" : [ "VANLIG", "AVVENTENDE", "BEHANDLINGSDAGER", "REISETILSKUDD" ]
 };
             defs["SykmeldingerResponse"] = {
   "type" : "object",
@@ -1577,7 +1599,17 @@ public class SykmeldingApiExample {
     public static void main(String[] args) {
         
         SykmeldingApi apiInstance = new SykmeldingApi();
-        Sykmelding body = ; // Sykmelding | Opprett sykmelding
+        Sykmelding body = {
+  "summary" : "Vanlig sykmelding, 100% (uten grad)",
+  "value" : {
+    "type" : "VANLIG",
+    "ident" : "12345678912",
+    "aktivitet" : [ {
+      "fom" : "2025-09-01",
+      "tom" : "2025-09-14"
+    } ]
+  }
+}; // Sykmelding | Opprett sykmelding
         try {
             apiInstance.opprettSykmelding(body);
         } catch (ApiException e) {
@@ -1595,7 +1627,17 @@ public class SykmeldingApiExample {
 
     public static void main(String[] args) {
         SykmeldingApi apiInstance = new SykmeldingApi();
-        Sykmelding body = ; // Sykmelding | Opprett sykmelding
+        Sykmelding body = {
+  "summary" : "Vanlig sykmelding, 100% (uten grad)",
+  "value" : {
+    "type" : "VANLIG",
+    "ident" : "12345678912",
+    "aktivitet" : [ {
+      "fom" : "2025-09-01",
+      "tom" : "2025-09-14"
+    } ]
+  }
+}; // Sykmelding | Opprett sykmelding
         try {
             apiInstance.opprettSykmelding(body);
         } catch (ApiException e) {
@@ -1610,7 +1652,17 @@ public class SykmeldingApiExample {
   <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
   </div> -->
                             <div class="tab-pane" id="examples-Sykmelding-opprettSykmelding-0-objc">
-                              <pre class="prettyprint"><code class="language-cpp">Sykmelding *body = ; // Opprett sykmelding (optional)
+                              <pre class="prettyprint"><code class="language-cpp">Sykmelding *body = {
+  "summary" : "Vanlig sykmelding, 100% (uten grad)",
+  "value" : {
+    "type" : "VANLIG",
+    "ident" : "12345678912",
+    "aktivitet" : [ {
+      "fom" : "2025-09-01",
+      "tom" : "2025-09-14"
+    } ]
+  }
+}; // Opprett sykmelding (optional)
 
 SykmeldingApi *apiInstance = [[SykmeldingApi alloc] init];
 
@@ -1629,7 +1681,17 @@ SykmeldingApi *apiInstance = [[SykmeldingApi alloc] init];
 
 var api = new ApplicationApi.SykmeldingApi()
 var opts = { 
-  'body':  // {{Sykmelding}} Opprett sykmelding
+  'body': {
+  "summary" : "Vanlig sykmelding, 100% (uten grad)",
+  "value" : {
+    "type" : "VANLIG",
+    "ident" : "12345678912",
+    "aktivitet" : [ {
+      "fom" : "2025-09-01",
+      "tom" : "2025-09-14"
+    } ]
+  }
+} // {{Sykmelding}} Opprett sykmelding
 };
 var callback = function(error, data, response) {
   if (error) {
@@ -1682,7 +1744,17 @@ namespace Example
 require_once(__DIR__ . '/vendor/autoload.php');
 
 $api_instance = new Swagger\Client\ApiSykmeldingApi();
-$body = ; // Sykmelding | Opprett sykmelding
+$body = {
+  "summary" : "Vanlig sykmelding, 100% (uten grad)",
+  "value" : {
+    "type" : "VANLIG",
+    "ident" : "12345678912",
+    "aktivitet" : [ {
+      "fom" : "2025-09-01",
+      "tom" : "2025-09-14"
+    } ]
+  }
+}; // Sykmelding | Opprett sykmelding
 
 try {
     $api_instance->opprettSykmelding($body);
@@ -1717,7 +1789,17 @@ from pprint import pprint
 
 # create an instance of the API class
 api_instance = swagger_client.SykmeldingApi()
-body =  # Sykmelding | Opprett sykmelding (optional)
+body = {
+  "summary" : "Vanlig sykmelding, 100% (uten grad)",
+  "value" : {
+    "type" : "VANLIG",
+    "ident" : "12345678912",
+    "aktivitet" : [ {
+      "fom" : "2025-09-01",
+      "tom" : "2025-09-14"
+    } ]
+  }
+} # Sykmelding | Opprett sykmelding (optional)
 
 try: 
     # Opprett sykmelding
@@ -1749,6 +1831,92 @@ except ApiException as e:
     "application/json" : {
       "schema" : {
         "$ref" : "#/components/schemas/Sykmelding"
+      },
+      "examples" : {
+        "vanlig_100_prosent" : {
+          "summary" : "Vanlig sykmelding, 100% (uten grad)",
+          "value" : {
+            "type" : "VANLIG",
+            "ident" : "12345678912",
+            "aktivitet" : [ {
+              "fom" : "2025-09-01",
+              "tom" : "2025-09-14"
+            } ]
+          }
+        },
+        "vanlig_gradert" : {
+          "summary" : "Vanlig sykmelding, gradert 50%",
+          "value" : {
+            "type" : "VANLIG",
+            "ident" : "12345678912",
+            "aktivitet" : [ {
+              "fom" : "2025-09-01",
+              "tom" : "2025-09-14",
+              "grad" : 50
+            } ]
+          }
+        },
+        "vanlig_gradert_med_reisetilskudd" : {
+          "summary" : "Vanlig sykmelding, gradert 50% med reisetilskudd",
+          "value" : {
+            "type" : "VANLIG",
+            "ident" : "12345678912",
+            "aktivitet" : [ {
+              "fom" : "2025-09-01",
+              "tom" : "2025-09-14",
+              "grad" : 50,
+              "reisetilskudd" : true
+            } ]
+          }
+        },
+        "vanlig_flere_perioder" : {
+          "summary" : "Vanlig sykmelding med flere perioder",
+          "value" : {
+            "type" : "VANLIG",
+            "ident" : "12345678912",
+            "aktivitet" : [ {
+              "fom" : "2025-09-01",
+              "tom" : "2025-09-14"
+            }, {
+              "fom" : "2025-09-15",
+              "tom" : "2025-09-30",
+              "grad" : 50
+            } ]
+          }
+        },
+        "avventende" : {
+          "summary" : "Avventende sykmelding",
+          "value" : {
+            "type" : "AVVENTENDE",
+            "ident" : "12345678912",
+            "aktivitet" : [ {
+              "fom" : "2025-09-01",
+              "tom" : "2025-09-14"
+            } ]
+          }
+        },
+        "behandlingsdager" : {
+          "summary" : "Sykmelding med behandlingsdager",
+          "value" : {
+            "type" : "BEHANDLINGSDAGER",
+            "ident" : "12345678912",
+            "aktivitet" : [ {
+              "fom" : "2025-09-01",
+              "tom" : "2025-09-14"
+            } ]
+          }
+        },
+        "reisetilskudd" : {
+          "summary" : "Reisetilskudd (standalone)",
+          "value" : {
+            "type" : "REISETILSKUDD",
+            "ident" : "12345678912",
+            "aktivitet" : [ {
+              "fom" : "2025-09-01",
+              "tom" : "2025-09-14"
+            } ]
+          }
+        }
       }
     }
   }
