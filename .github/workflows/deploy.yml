@@ -1,5 +1,7 @@
 on:
   push:
+    branches:
+      - main
 
 permissions:
   actions: read
@@ -9,9 +11,45 @@ permissions:
   id-token: write
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: navikt/tsm-workflows/actions/gradle/test@main
+
   build:
-    uses: navikt/teamsykmelding-github-actions-workflows/.github/workflows/gradle-21.yaml@main
-    secrets: inherit
-    with:
-      app: 'tsm-input-dolly'
-      only-dev: true
+    runs-on: ubuntu-latest
+    if: github.ref_name == 'main' || startsWith(github.ref_name, 'dev') || startsWith(github.ref_name, 'feat/ktor')
+    steps:
+      - uses: navikt/tsm-workflows/actions/gradle/build@main
+        id: build
+        with:
+          app: "tsm-input-dolly"
+          team: "tsm"
+          salsa: false
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    outputs:
+      image: ${{ steps.build.outputs.image }}
+      digest: ${{ steps.build.outputs.digest }}
+
+  sbom:
+    name: Upload SBOM for build
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: navikt/tsm-workflows/actions/attest-sign@main
+        with:
+          image: ${{ needs.build.outputs.image }}
+          digest: ${{ needs.build.outputs.digest }}
+          team: tsm
+
+  deploy-dev:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: nais/deploy/actions/deploy@v2
+        env:
+          CLUSTER: "dev-gcp"
+          RESOURCE: ".nais/nais-dev.yaml"
+          WORKLOAD_IMAGE: ${{ needs.build.outputs.image }}
+          VAR: sourceVersionURL=https://github.com/${{ github.repository }}/tree/${{ github.sha }}
