@@ -14,6 +14,8 @@ import no.nav.tsm.sykmelding.input.core.model.SykmeldingMeta
 import no.nav.tsm.sykmelding.input.core.model.SykmeldingRecord
 import no.nav.tsm.sykmelding.input.core.model.ValidationResult
 import no.nav.tsm.sykmelding.input.core.model.metadata.HelsepersonellKategori
+import no.nav.tsm.sykmelding.input.core.model.metadata.Kontaktinfo
+import no.nav.tsm.sykmelding.input.core.model.metadata.KontaktinfoType
 import no.nav.tsm.sykmelding.input.core.model.metadata.MessageMetadata
 import no.nav.tsm.sykmelding.input.core.model.metadata.Navn
 import no.nav.tsm.sykmelding.input.core.model.metadata.PersonId
@@ -61,7 +63,7 @@ fun mapToSykmeldingRecord(sykmeldingId: String, sykmelding: DollySykmelding, nav
                     PersonId(type = PersonIdType.HPR, id = "565562871"),
                     PersonId(type = PersonIdType.FNR, id = "16889298166")
                 ),
-                kontaktinfo = emptyList(),
+                kontaktinfo = listOf(Kontaktinfo(KontaktinfoType.TLF, "+4712345678")),
             ),
             sykmelder = Sykmelder(
                 ids = listOf(

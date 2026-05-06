@@ -18,8 +18,6 @@ import javax.sql.DataSource
 import kotlin.test.*
 
 class SykmeldingRepositoryTest {
-
-
     private lateinit var dataSource: DataSource
     private lateinit var repository: SykmeldingRepository
     private val objectMapper: ObjectMapper = sykmeldingObjectMapper
