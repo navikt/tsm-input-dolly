@@ -3,7 +3,6 @@ package no.nav.tsm.sykmelding.repository
 import com.fasterxml.jackson.databind.ObjectMapper
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
-import no.nav.tsm.sykmelding.input.core.model.AktivitetIkkeMulig
 import no.nav.tsm.sykmelding.input.core.model.RuleType
 import no.nav.tsm.sykmelding.input.core.model.sykmeldingObjectMapper
 import no.nav.tsm.sykmelding.mapper.mapToSykmeldingRecord
@@ -14,14 +13,9 @@ import no.nav.tsm.`tsm-pdl`.Navn
 import org.flywaydb.core.Flyway
 import org.postgresql.ds.PGSimpleDataSource
 import java.time.LocalDate
-import java.util.UUID
+import java.util.*
 import javax.sql.DataSource
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
-import kotlin.test.assertNull
+import kotlin.test.*
 
 class SykmeldingRepositoryTest {
 
@@ -135,7 +129,7 @@ class SykmeldingRepositoryTest {
         assertEquals(RuleType.OK, retrieved.validation.status)
         assertEquals(1, retrieved.sykmelding.aktivitet.size)
 
-        val aktivitet = retrieved.sykmelding.aktivitet.first() as AktivitetIkkeMulig
+        val aktivitet = retrieved.sykmelding.aktivitet.first() as no.nav.tsm.sykmelding.input.core.model.Aktivitet.IkkeMulig
         assertEquals(LocalDate.of(2025, 9, 10), aktivitet.fom)
         assertEquals(LocalDate.of(2025, 9, 20), aktivitet.tom)
     }

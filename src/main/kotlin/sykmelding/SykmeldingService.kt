@@ -3,11 +3,6 @@ package no.nav.tsm.sykmelding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import no.nav.tsm.sykmelding.exceptions.SykmeldingValidationException
-import no.nav.tsm.sykmelding.input.core.model.AktivitetIkkeMulig
-import no.nav.tsm.sykmelding.input.core.model.Avventende
-import no.nav.tsm.sykmelding.input.core.model.Behandlingsdager
-import no.nav.tsm.sykmelding.input.core.model.Gradert
-import no.nav.tsm.sykmelding.input.core.model.Reisetilskudd
 import no.nav.tsm.sykmelding.input.core.model.SykmeldingRecord
 import no.nav.tsm.sykmelding.input.producer.SykmeldingInputProducer
 import no.nav.tsm.sykmelding.mapper.mapToSykmeldingRecord
@@ -102,10 +97,11 @@ class SykmeldingService(private val sykmeldingProducer: SykmeldingInputProducer,
     private fun toDollySykmelding(sykmeldingRecord: SykmeldingRecord): DollySykmeldingResponse {
         val coreAktivitet = sykmeldingRecord.sykmelding.aktivitet
         val type = when (coreAktivitet.first()) {
-            is Avventende -> SykmeldingType.AVVENTENDE
-            is Behandlingsdager -> SykmeldingType.BEHANDLINGSDAGER
-            is Reisetilskudd -> SykmeldingType.REISETILSKUDD
-            is Gradert, is AktivitetIkkeMulig -> SykmeldingType.VANLIG
+            is no.nav.tsm.sykmelding.input.core.model.Aktivitet.Avventende -> SykmeldingType.AVVENTENDE
+            is no.nav.tsm.sykmelding.input.core.model.Aktivitet.Behandlingsdager -> SykmeldingType.BEHANDLINGSDAGER
+            is no.nav.tsm.sykmelding.input.core.model.Aktivitet.Reisetilskudd -> SykmeldingType.REISETILSKUDD
+            is no.nav.tsm.sykmelding.input.core.model.Aktivitet.Gradert,
+            is no.nav.tsm.sykmelding.input.core.model.Aktivitet.IkkeMulig -> SykmeldingType.VANLIG
         }
         return DollySykmeldingResponse(
             sykmeldingId = sykmeldingRecord.sykmelding.id,
@@ -113,16 +109,13 @@ class SykmeldingService(private val sykmeldingProducer: SykmeldingInputProducer,
             ident = sykmeldingRecord.sykmelding.pasient.fnr,
             aktivitet = coreAktivitet.map { core ->
                 when (core) {
-                    is Gradert -> Aktivitet(
+                    is no.nav.tsm.sykmelding.input.core.model.Aktivitet.Gradert -> Aktivitet(
                         fom = core.fom,
                         tom = core.tom,
                         grad = core.grad,
                         reisetilskudd = core.reisetilskudd,
                     )
-                    is AktivitetIkkeMulig -> Aktivitet(fom = core.fom, tom = core.tom)
-                    is Reisetilskudd -> Aktivitet(fom = core.fom, tom = core.tom)
-                    is Avventende -> Aktivitet(fom = core.fom, tom = core.tom)
-                    is Behandlingsdager -> Aktivitet(fom = core.fom, tom = core.tom)
+                    else -> Aktivitet(fom = core.fom, tom = core.tom)
                 }
             }
         )
