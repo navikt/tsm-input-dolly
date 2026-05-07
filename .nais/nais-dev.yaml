@@ -71,3 +71,9 @@ spec:
         - application: testnav-sykemelding-proxy
           namespace: dolly
           cluster: dev-gcp
+        - application: testnav-dolly-proxy-trygdeetaten
+          namespace: dolly
+          cluster: dev-fss
+        - application: testnav-dolly-proxy
+          namespace: dolly
+          cluster: dev-fss
