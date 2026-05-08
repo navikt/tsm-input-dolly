@@ -50,8 +50,7 @@ spec:
   kafka:
     pool: nav-dev
   ingresses:
-    - "https://tsm-input-dolly.intern.dev.nav.no/openapi"
-    - "https://tsm-input-dolly.intern.dev.nav.no/swagger-ui"
+    - "https://tsm-input-dolly.intern.dev.nav.no"
   observability:
     autoInstrumentation:
       enabled: true
