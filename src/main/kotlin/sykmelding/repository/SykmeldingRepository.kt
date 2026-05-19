@@ -1,12 +1,19 @@
 package no.nav.tsm.sykmelding.repository
 
+import com.fasterxml.jackson.core.JacksonException
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import no.nav.tsm.sykmelding.input.core.model.SykmeldingRecord
+import org.slf4j.LoggerFactory
 import javax.sql.DataSource
 
 class SykmeldingRepository(private val dataSource: DataSource, private val objectMapper: ObjectMapper) {
+
+    private val logger = LoggerFactory.getLogger(this::class.java)
 
     suspend fun saveSykmelding(sykmeldingId: String, ident: String, sykmeldingRecord: SykmeldingRecord) = withContext(Dispatchers.IO) {
         val sql = """
@@ -31,18 +38,28 @@ class SykmeldingRepository(private val dataSource: DataSource, private val objec
     suspend fun getByIdent(ident: String): List<SykmeldingRecord> = withContext(Dispatchers.IO) {
         val sql = "SELECT sykmeldingId, ident, sykmelding FROM sykmelding WHERE ident = ?"
         val sykmeldinger = mutableListOf<SykmeldingRecord>()
-
+        val incorrectSykmeldingerIds = mutableListOf<String>()
         dataSource.connection.use { connection ->
             connection.prepareStatement(sql).use { statement ->
                 statement.setString(1, ident)
                 statement.executeQuery().use { resultSet ->
                     while (resultSet.next()) {
-                        val json = resultSet.getString("sykmelding")
-                        val sykmeldingRecord = objectMapper.readValue(json, SykmeldingRecord::class.java)
-                        sykmeldinger.add(sykmeldingRecord)
+                        try {
+                            val json = resultSet.getString("sykmelding")
+                            val sykmeldingRecord = objectMapper.readValue(json, SykmeldingRecord::class.java)
+                            sykmeldinger.add(sykmeldingRecord)
+                        } catch (ex: JacksonException) {
+                            val id = resultSet.getString("sykmeldingId")
+                            logger.warn("Error while fetching sykmelding from db with $id")
+                            incorrectSykmeldingerIds.add(id)
+                        }
                     }
                 }
             }
+        }
+        incorrectSykmeldingerIds.forEach {
+            val sykmeldingId = deleteBySykmeldingId(it)
+            logger.info("Deleted sykmelding with id $sykmeldingId")
         }
         sykmeldinger
     }
