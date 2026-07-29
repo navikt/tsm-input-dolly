@@ -12,9 +12,9 @@ import no.nav.tsm.sykmelding.model.DollySykmelding
 import no.nav.tsm.sykmelding.model.SykmeldingType
 import no.nav.tsm.sykmelding.repository.SykmeldingRepository
 import no.nav.tsm.sykmelding.testcontainers.PostgresSQL.Companion.postgres
-import no.nav.tsm.`tsm-pdl`.Navn
-import no.nav.tsm.`tsm-pdl`.TsmPdlClient
-import no.nav.tsm.`tsm-pdl`.TsmPdlResponse
+import no.nav.tsm.pdl.Navn
+import no.nav.tsm.pdl.TsmPdlClient
+import no.nav.tsm.pdl.TsmPdlResponse
 import org.flywaydb.core.Flyway
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows

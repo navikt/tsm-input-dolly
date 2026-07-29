@@ -11,6 +11,7 @@ import io.ktor.server.application.*
 import io.ktor.server.plugins.di.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.time.delay
+import no.nav.tsm.ktor.auth.texas.TexasClient
 import no.nav.tsm.ktor.di.dynamicDependencies
 import no.nav.tsm.sykmelding.SykmeldingService
 import no.nav.tsm.sykmelding.consumer.SykmeldingConsumerService
@@ -18,8 +19,7 @@ import no.nav.tsm.sykmelding.consumer.initializeConsumer
 import no.nav.tsm.sykmelding.input.producer.SykmeldingInputKafkaInputFactory
 import no.nav.tsm.sykmelding.input.producer.SykmeldingInputProducer
 import no.nav.tsm.sykmelding.repository.SykmeldingRepository
-import no.nav.tsm.texas.TexasClient
-import no.nav.tsm.`tsm-pdl`.TsmPdlClient
+import no.nav.tsm.pdl.TsmPdlClient
 import org.apache.kafka.clients.consumer.Consumer
 import org.postgresql.ds.PGSimpleDataSource
 import javax.sql.DataSource

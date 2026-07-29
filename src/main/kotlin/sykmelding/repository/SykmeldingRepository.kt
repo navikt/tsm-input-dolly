@@ -1,22 +1,17 @@
 package no.nav.tsm.sykmelding.repository
 
 import com.fasterxml.jackson.core.JacksonException
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import no.nav.tsm.ktor.logger
 import no.nav.tsm.sykmelding.input.core.model.SykmeldingRecord
 import no.nav.tsm.sykmelding.input.core.model.sykmeldingObjectMapper
-import org.slf4j.LoggerFactory
 import javax.sql.DataSource
 
 class SykmeldingRepository(
     private val dataSource: DataSource
 ) {
-
-    private val logger = LoggerFactory.getLogger(this::class.java)
+    private val logger = logger()
 
     suspend fun saveSykmelding(sykmeldingId: String, ident: String, sykmeldingRecord: SykmeldingRecord) = withContext(Dispatchers.IO) {
         val sql = """

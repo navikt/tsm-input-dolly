@@ -28,6 +28,8 @@ dependencies {
     implementation(libs.logback.classic)
     implementation(libs.logback.encoder)
     implementation(libs.micrometer.registry.prometheus)
+    implementation(libs.khealth)
+
     implementation(libs.postgres)
     implementation(libs.flyway.core)
     implementation(libs.flyway.postgresql)

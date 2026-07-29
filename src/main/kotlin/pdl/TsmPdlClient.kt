@@ -1,4 +1,4 @@
-package no.nav.tsm.`tsm-pdl`
+package no.nav.tsm.pdl
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -8,8 +8,8 @@ import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
-import no.nav.tsm.plugins.Environment
-import no.nav.tsm.texas.TexasClient
+import no.nav.tsm.ktor.auth.texas.TexasClient
+import no.nav.tsm.ktor.auth.texas.TexasToken
 import java.time.LocalDate
 
 data class TsmPdlResponse(
@@ -26,24 +26,26 @@ data class Navn(
 )
 
 
-class TsmPdlClient(private val texasClient: TexasClient,
-                    private val httpClient: HttpClient,
-                    environment: Environment) {
-    val tsmUrl = environment.tsmPdlUrl
-    val tsmScope = environment.tsmPdlScope
+class TsmPdlClient(
+    private val texasClient: TexasClient,
+    private val httpClient: HttpClient,
+) {
 
-    suspend fun getPerson(ident: String) : TsmPdlResponse? {
-        val token = texasClient.getAccessToken(tsmScope)
-        val response = httpClient.get("$tsmUrl/api/person") {
+    private val tsmPdlCacheUrl = "http://tsm-pdl-cache"
+
+    suspend fun getPerson(ident: String): TsmPdlResponse? {
+        val (token) = this.getToken()
+        val response = httpClient.get("$tsmPdlCacheUrl/api/person") {
             bearerAuth(token)
             header("ident", ident)
             accept(ContentType.Application.Json)
         }
-        if(response.status == HttpStatusCode.OK) {
+        if (response.status == HttpStatusCode.OK) {
             val body = response.body<TsmPdlResponse>()
             return body
         }
         return null
     }
 
+    private suspend fun getToken(): TexasToken = texasClient.entraIdToken("tsm", "tsm-pdl-cache")
 }

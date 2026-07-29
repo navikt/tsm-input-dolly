@@ -12,8 +12,8 @@ import no.nav.tsm.sykmelding.model.DollySykmeldingResponse
 import no.nav.tsm.sykmelding.model.DollySykmeldingerResponse
 import no.nav.tsm.sykmelding.model.SykmeldingType
 import no.nav.tsm.sykmelding.repository.SykmeldingRepository
-import no.nav.tsm.`tsm-pdl`.TsmPdlClient
-import no.nav.tsm.`tsm-pdl`.TsmPdlResponse
+import no.nav.tsm.pdl.TsmPdlClient
+import no.nav.tsm.pdl.TsmPdlResponse
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.util.UUID

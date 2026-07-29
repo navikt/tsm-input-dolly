@@ -26,7 +26,7 @@ import no.nav.tsm.sykmelding.model.SykmeldingType
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 
-fun mapToSykmeldingRecord(sykmeldingId: String, sykmelding: DollySykmelding, navn: no.nav.tsm.`tsm-pdl`.Navn): SykmeldingRecord {
+fun mapToSykmeldingRecord(sykmeldingId: String, sykmelding: DollySykmelding, navn: no.nav.tsm.pdl.Navn): SykmeldingRecord {
     return SykmeldingRecord.Digital(
         metadata = MessageMetadata.Digital("223456789"),
         sykmelding = Sykmelding.Digital(

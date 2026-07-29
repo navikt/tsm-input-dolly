@@ -4,7 +4,6 @@ import com.atlassian.oai.validator.restassured.OpenApiValidationFilter
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.ktor.server.plugins.di.*
-import io.ktor.server.routing.*
 import io.mockk.coEvery
 import io.mockk.mockk
 import io.restassured.RestAssured
@@ -12,7 +11,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import no.nav.tsm.sykmelding.SykmeldingService
-import no.nav.tsm.sykmelding.api.sykmeldingApi
+import no.nav.tsm.sykmelding.configureRouting
 import no.nav.tsm.sykmelding.exceptions.SykmeldingValidationException
 import no.nav.tsm.sykmelding.input.core.model.sykmeldingObjectMapper
 import no.nav.tsm.sykmelding.model.*

@@ -1,11 +1,15 @@
 [versions]
 kotlin = "2.4.10"
+flyway = "11.12.0"
+postgresVersion = "42.7.7"
+
 logback = "1.5.38"
 logbackEncoder = "9.0"
-flyway = "11.12.0"
-sykmeldingInput = "27"
 micrometer = "1.6.13"
-postgresVersion = "42.7.7"
+khealth = "3.0.2"
+
+sykmeldingInput = "27"
+
 testcontainerVersion = "2.0.3"
 mockkVersion = "1.14.5"
 mockitoVersion = "5.4.0"
@@ -19,14 +23,16 @@ kotest-assertions = "6.1.11"
 postgres = { module = "org.postgresql:postgresql", version.ref = "postgresVersion" }
 flyway-core = { module = "org.flywaydb:flyway-core", version.ref = "flyway" }
 flyway-postgresql = { module = "org.flywaydb:flyway-database-postgresql", version.ref = "flyway" }
+
 logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 logback-encoder = { module = "net.logstash.logback:logstash-logback-encoder", version.ref = "logbackEncoder"}
 micrometer-registry-prometheus = { module = "io.micrometer:micrometer-registry-prometheus", version.ref = "micrometer" }
+khealth = { module = "dev.hayden:khealth", version.ref = "khealth" }
 
 tsm-sykmelding-input = { module = "no.nav.tsm.sykmelding:input", version.ref = "sykmeldingInput" }
 
-kotest-assertions = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest-assertions" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+kotest-assertions = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest-assertions" }
 testcontainers-postgresql = { module = "org.testcontainers:testcontainers-postgresql", version.ref = "testcontainerVersion" }
 mockk = { module = "io.mockk:mockk" , version.ref = "mockkVersion"}
 mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin" , version.ref = "mockitoVersion"}

@@ -33,12 +33,15 @@ spec:
         medium: Memory
       mountPath: /app/docs
   liveness:
-    path: /internal/is_alive
+    path: /internal/health/alive
   readiness:
-    path: /internal/is_ready
+    path: /internal/health/ready
+  preStopHook:
+    http:
+      path: /internal/shutdown
   prometheus:
     enabled: true
-    path: /internal/prometheus
+    path: /internal/metrics
   resources:
     requests:
       cpu: 30m

@@ -9,7 +9,7 @@ import no.nav.tsm.sykmelding.mapper.mapToSykmeldingRecord
 import no.nav.tsm.sykmelding.model.Aktivitet
 import no.nav.tsm.sykmelding.model.DollySykmelding
 import no.nav.tsm.sykmelding.testcontainers.PostgresSQL.Companion.postgres
-import no.nav.tsm.`tsm-pdl`.Navn
+import no.nav.tsm.pdl.Navn
 import org.flywaydb.core.Flyway
 import org.postgresql.ds.PGSimpleDataSource
 import java.time.LocalDate

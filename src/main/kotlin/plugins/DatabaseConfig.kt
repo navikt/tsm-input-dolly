@@ -1,15 +1,13 @@
-package no.nav.tsm
+package no.nav.tsm.plugins
 
 import io.ktor.server.application.*
 import io.ktor.server.plugins.di.dependencies
-import no.nav.tsm.plugins.Environment
+import no.nav.tsm.ktor.logger
 import org.flywaydb.core.Flyway
 import org.postgresql.ds.PGSimpleDataSource
-import org.slf4j.LoggerFactory
-
-private val logger = LoggerFactory.getLogger("DatabaseConfig")
 
 fun Application.configureDatabase() {
+    val logger = logger()
     val env: Environment by dependencies
     val url = env.jdbcUrl
 

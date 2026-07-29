@@ -2,6 +2,7 @@ package no.nav.tsm.sykmelding.consumer
 
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.isActive
+import no.nav.tsm.ktor.logger
 import no.nav.tsm.plugins.Environment
 import no.nav.tsm.sykmelding.input.core.model.SykmeldingRecord
 import no.nav.tsm.sykmelding.input.core.model.sykmeldingObjectMapper
@@ -12,7 +13,6 @@ import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.common.serialization.ByteArrayDeserializer
 import org.apache.kafka.common.serialization.StringDeserializer
-import org.slf4j.LoggerFactory
 import java.time.Duration
 import java.util.UUID
 import kotlin.collections.set
@@ -24,7 +24,7 @@ class SykmeldingConsumerService(
     private val consumer: Consumer<String, ByteArray>,
     environment: Environment,
 ) {
-    private val logger = LoggerFactory.getLogger(SykmeldingConsumerService::class.java)
+    private val logger = logger()
     private val sykmeldingTopic = environment.sykmeldingTopic
 
     suspend fun start() = coroutineScope {

@@ -14,7 +14,7 @@ import no.nav.tsm.sykmelding.mapper.mapToSykmeldingRecord
 import no.nav.tsm.sykmelding.model.Aktivitet
 import no.nav.tsm.sykmelding.model.DollySykmelding
 import no.nav.tsm.sykmelding.repository.SykmeldingRepository
-import no.nav.tsm.`tsm-pdl`.Navn
+import no.nav.tsm.pdl.Navn
 import org.apache.kafka.clients.consumer.Consumer
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.apache.kafka.clients.consumer.ConsumerRecords
