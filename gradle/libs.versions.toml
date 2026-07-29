@@ -1,12 +1,10 @@
 [versions]
-kotlin = "2.2.21"
-ktor = "3.5.1"
-logback = "1.5.34"
-logbackEncoder = "8.1"
+kotlin = "2.4.10"
+logback = "1.5.38"
+logbackEncoder = "9.0"
 flyway = "11.12.0"
 sykmeldingInput = "27"
 micrometer = "1.6.13"
-koinVersion = "4.1.1"
 postgresVersion = "42.7.7"
 testcontainerVersion = "2.0.3"
 mockkVersion = "1.14.5"
@@ -18,22 +16,20 @@ swaggerValidatorResetAssuredVersion = "2.45.1"
 kotest-assertions = "6.1.11"
 
 [libraries]
-koin-ktor = { module = "io.insert-koin:koin-ktor", version.ref = "koinVersion" }
-koin-logger = { module = "io.insert-koin:koin-logger-slf4j", version.ref = "koinVersion" }
-logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
-logback-encoder = { module = "net.logstash.logback:logstash-logback-encoder", version.ref = "logbackEncoder"}
-
-micrometer-registry-prometheus = { module = "io.micrometer:micrometer-registry-prometheus", version.ref = "micrometer" }
 postgres = { module = "org.postgresql:postgresql", version.ref = "postgresVersion" }
 flyway-core = { module = "org.flywaydb:flyway-core", version.ref = "flyway" }
 flyway-postgresql = { module = "org.flywaydb:flyway-database-postgresql", version.ref = "flyway" }
-kotest-assertions = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest-assertions" }
+logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
+logback-encoder = { module = "net.logstash.logback:logstash-logback-encoder", version.ref = "logbackEncoder"}
+micrometer-registry-prometheus = { module = "io.micrometer:micrometer-registry-prometheus", version.ref = "micrometer" }
+
 tsm-sykmelding-input = { module = "no.nav.tsm.sykmelding:input", version.ref = "sykmeldingInput" }
 
+kotest-assertions = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest-assertions" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 testcontainers-postgresql = { module = "org.testcontainers:testcontainers-postgresql", version.ref = "testcontainerVersion" }
-mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin" , version.ref = "mockitoVersion"}
 mockk = { module = "io.mockk:mockk" , version.ref = "mockkVersion"}
+mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin" , version.ref = "mockitoVersion"}
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test" , version.ref = "kotlinxCoroutinesTestVersion"}
 hamcrest = { module = "org.hamcrest:hamcrest", version.ref = "hamcrestVersion" }
 rest-assured = { module = "io.rest-assured:rest-assured", version.ref = "restAssuredVersion" }

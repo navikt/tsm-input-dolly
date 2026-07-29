@@ -35,7 +35,7 @@ class SykmeldingRepositoryTest {
         flyway.migrate()
 
 
-        repository = SykmeldingRepository(dataSource, objectMapper)
+        repository = SykmeldingRepository(dataSource)
     }
 
     @AfterTest

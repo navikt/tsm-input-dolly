@@ -18,7 +18,11 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 import java.util.UUID
 
-class SykmeldingService(private val sykmeldingProducer: SykmeldingInputProducer, private val sykmeldingRepository: SykmeldingRepository, private val tsmPdlClient: TsmPdlClient) {
+class SykmeldingService(
+    private val sykmeldingProducer: SykmeldingInputProducer,
+    private val sykmeldingRepository: SykmeldingRepository,
+    private val tsmPdlClient: TsmPdlClient,
+) {
 
     suspend fun opprettSykmelding(sykmelding: DollySykmelding): String {
         if (sykmelding.ident.length != 11) {

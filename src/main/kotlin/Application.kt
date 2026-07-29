@@ -2,7 +2,7 @@ package no.nav.tsm
 
 import io.ktor.server.application.Application
 import io.ktor.server.netty.EngineMain
-import no.nav.tsm.plugins.configureKoin
+import no.nav.tsm.plugins.configureDependencies
 import no.nav.tsm.plugins.configureConsumer
 
 fun main(args: Array<String>) {
@@ -10,7 +10,7 @@ fun main(args: Array<String>) {
 }
 
 fun Application.module() {
-    configureKoin()
+    configureDependencies()
     configureDatabase()
     configureConsumer()
     configureHealthChecks()

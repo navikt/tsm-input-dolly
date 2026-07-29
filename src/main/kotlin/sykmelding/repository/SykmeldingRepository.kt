@@ -8,10 +8,13 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import no.nav.tsm.sykmelding.input.core.model.SykmeldingRecord
+import no.nav.tsm.sykmelding.input.core.model.sykmeldingObjectMapper
 import org.slf4j.LoggerFactory
 import javax.sql.DataSource
 
-class SykmeldingRepository(private val dataSource: DataSource, private val objectMapper: ObjectMapper) {
+class SykmeldingRepository(
+    private val dataSource: DataSource
+) {
 
     private val logger = LoggerFactory.getLogger(this::class.java)
 
@@ -29,7 +32,7 @@ class SykmeldingRepository(private val dataSource: DataSource, private val objec
             connection.prepareStatement(sql).use { statement ->
                 statement.setString(1, sykmeldingId)
                 statement.setString(2, ident)
-                statement.setString(3, objectMapper.writeValueAsString(sykmeldingRecord))
+                statement.setString(3, sykmeldingObjectMapper.writeValueAsString(sykmeldingRecord))
                 statement.executeUpdate()
             }
         }
@@ -46,7 +49,7 @@ class SykmeldingRepository(private val dataSource: DataSource, private val objec
                     while (resultSet.next()) {
                         try {
                             val json = resultSet.getString("sykmelding")
-                            val sykmeldingRecord = objectMapper.readValue(json, SykmeldingRecord::class.java)
+                            val sykmeldingRecord = sykmeldingObjectMapper.readValue(json, SykmeldingRecord::class.java)
                             sykmeldinger.add(sykmeldingRecord)
                         } catch (ex: JacksonException) {
                             val id = resultSet.getString("sykmeldingId")
@@ -73,7 +76,7 @@ class SykmeldingRepository(private val dataSource: DataSource, private val objec
                 statement.executeQuery().use { resultSet ->
                     if (resultSet.next()) {
                         val json = resultSet.getString("sykmelding")
-                        objectMapper.readValue(json, SykmeldingRecord::class.java)
+                        sykmeldingObjectMapper.readValue(json, SykmeldingRecord::class.java)
                     } else {
                         null
                     }

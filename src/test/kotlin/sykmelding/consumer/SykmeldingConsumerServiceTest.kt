@@ -8,6 +8,7 @@ import io.mockk.verify
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
+import no.nav.tsm.plugins.Environment
 import no.nav.tsm.sykmelding.input.core.model.sykmeldingObjectMapper
 import no.nav.tsm.sykmelding.mapper.mapToSykmeldingRecord
 import no.nav.tsm.sykmelding.model.Aktivitet
@@ -34,10 +35,13 @@ class SykmeldingConsumerServiceTest {
 
     @BeforeTest
     fun setup() {
+        val testEnv = mockk<Environment>(relaxed = true)
+        every { testEnv.sykmeldingTopic } returns "tsm.sykmeldinger"
+
         consumer = mockk(relaxed = true)
         repository = mockk(relaxed = true)
         objectMapper = sykmeldingObjectMapper
-        consumerService = SykmeldingConsumerService(consumer, repository, "tsm.sykmeldinger")
+        consumerService = SykmeldingConsumerService(repository, consumer, testEnv)
     }
 
     @Test

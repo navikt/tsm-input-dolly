@@ -8,6 +8,7 @@ import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
+import no.nav.tsm.plugins.Environment
 import no.nav.tsm.texas.TexasClient
 import java.time.LocalDate
 
@@ -27,8 +28,9 @@ data class Navn(
 
 class TsmPdlClient(private val texasClient: TexasClient,
                     private val httpClient: HttpClient,
-                   private val tsmScope: String,
-                   private val tsmUrl: String) {
+                    environment: Environment) {
+    val tsmUrl = environment.tsmPdlUrl
+    val tsmScope = environment.tsmPdlScope
 
     suspend fun getPerson(ident: String) : TsmPdlResponse? {
         val token = texasClient.getAccessToken(tsmScope)

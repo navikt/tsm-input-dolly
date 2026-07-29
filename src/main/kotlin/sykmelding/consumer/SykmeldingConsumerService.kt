@@ -2,23 +2,30 @@ package no.nav.tsm.sykmelding.consumer
 
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.isActive
+import no.nav.tsm.plugins.Environment
 import no.nav.tsm.sykmelding.input.core.model.SykmeldingRecord
 import no.nav.tsm.sykmelding.input.core.model.sykmeldingObjectMapper
 import no.nav.tsm.sykmelding.repository.SykmeldingRepository
 import org.apache.kafka.clients.consumer.Consumer
+import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.consumer.ConsumerRecord
+import org.apache.kafka.clients.consumer.KafkaConsumer
+import org.apache.kafka.common.serialization.ByteArrayDeserializer
+import org.apache.kafka.common.serialization.StringDeserializer
 import org.slf4j.LoggerFactory
 import java.time.Duration
 import java.util.UUID
+import kotlin.collections.set
 
 class SykmeldingParseException(message: String) : Exception(message)
 
 class SykmeldingConsumerService(
-    private val consumer: Consumer<String, ByteArray>,
     private val repository: SykmeldingRepository,
-    private val sykmeldingTopic: String,
+    private val consumer: Consumer<String, ByteArray>,
+    environment: Environment,
 ) {
     private val logger = LoggerFactory.getLogger(SykmeldingConsumerService::class.java)
+    private val sykmeldingTopic = environment.sykmeldingTopic
 
     suspend fun start() = coroutineScope {
         logger.info("Starting kafka consumer")
@@ -42,7 +49,7 @@ class SykmeldingConsumerService(
 
         try {
             val sykmeldingRecord: SykmeldingRecord? = readValue(messageValue)
-            if(sykmeldingRecord == null) {
+            if (sykmeldingRecord == null) {
                 logger.info("SykmeldingRecord is null, deleting sykmelding with id: $sykmeldingId")
                 repository.deleteBySykmeldingId(sykmeldingId)
             } else {
@@ -71,4 +78,14 @@ class SykmeldingConsumerService(
             throw SykmeldingParseException("Failed to parse sykmelding record")
         }
     }
+}
+
+fun initializeConsumer(env: Environment): Consumer<String, ByteArray> {
+    val kafkaProperties = env.kafkaConfig
+    kafkaProperties[ConsumerConfig.GROUP_ID_CONFIG] = "tsm-input-dolly"
+    kafkaProperties[ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG] = StringDeserializer::class.java
+    kafkaProperties[ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG] = ByteArrayDeserializer::class.java
+    kafkaProperties[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = "earliest"
+    kafkaProperties[ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG] = "true"
+    return KafkaConsumer(kafkaProperties)
 }

@@ -7,7 +7,8 @@ import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
-import org.slf4j.LoggerFactory
+import no.nav.tsm.ktor.logger
+import no.nav.tsm.plugins.Environment
 
 data class TexasResponse(
     val access_token: String,
@@ -20,12 +21,11 @@ data class TexasRequest(
     val target: String,
 )
 class TexasClient(
-    private val tokenEndpoint: String,
     private val httpClient: HttpClient,
+    environment: Environment
 ) {
-    companion object {
-        private val log = LoggerFactory.getLogger(TexasClient::class.java)
-    }
+    val log = logger()
+    val tokenEndpoint = environment.texasUrl
 
     suspend fun getAccessToken(scope: String): String {
 

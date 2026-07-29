@@ -1,11 +1,10 @@
 package no.nav.tsm
 
 import com.atlassian.oai.validator.restassured.OpenApiValidationFilter
-import io.ktor.server.application.install
-import io.ktor.server.engine.embeddedServer
-import io.ktor.server.netty.Netty
-import io.ktor.server.routing.route
-import io.ktor.server.routing.routing
+import io.ktor.server.engine.*
+import io.ktor.server.netty.*
+import io.ktor.server.plugins.di.*
+import io.ktor.server.routing.*
 import io.mockk.coEvery
 import io.mockk.mockk
 import io.restassured.RestAssured
@@ -16,17 +15,10 @@ import no.nav.tsm.sykmelding.SykmeldingService
 import no.nav.tsm.sykmelding.api.sykmeldingApi
 import no.nav.tsm.sykmelding.exceptions.SykmeldingValidationException
 import no.nav.tsm.sykmelding.input.core.model.sykmeldingObjectMapper
-import no.nav.tsm.sykmelding.model.Aktivitet
-import no.nav.tsm.sykmelding.model.DollySykmelding
-import no.nav.tsm.sykmelding.model.DollySykmeldingResponse
-import no.nav.tsm.sykmelding.model.DollySykmeldingerResponse
-import no.nav.tsm.sykmelding.model.SykmeldingType
+import no.nav.tsm.sykmelding.model.*
 import org.hamcrest.CoreMatchers.equalTo
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.TestInstance
-import org.koin.dsl.module
-import org.koin.ktor.plugin.Koin
-import org.koin.logger.slf4jLogger
 import java.time.LocalDate
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -39,21 +31,11 @@ class OpenApiTest {
         private val filter: OpenApiValidationFilter
         private val application = scope.
             embeddedServer(factory = Netty, port = 0) {
+                dependencies {
+                    provide<SykmeldingService> { sykmeldingService }
+                }
                 configureRouting()
                 configureSerialization()
-                install(Koin) {
-                    slf4jLogger()
-                    modules(module {
-                        single {
-                            sykmeldingService
-                        }
-                    })
-                }
-                routing {
-                    route("/api") {
-                        sykmeldingApi()
-                    }
-                }
             }.start(wait = false)
 
         val thisPort = runBlocking { application.engine.resolvedConnectors().first().port }

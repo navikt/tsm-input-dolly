@@ -6,7 +6,6 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import no.nav.tsm.sykmelding.exceptions.SykmeldingValidationException
 import no.nav.tsm.sykmelding.input.core.model.SykmeldingRecord
-import no.nav.tsm.sykmelding.input.core.model.sykmeldingObjectMapper
 import no.nav.tsm.sykmelding.input.producer.SykmeldingInputProducer
 import no.nav.tsm.sykmelding.model.Aktivitet
 import no.nav.tsm.sykmelding.model.DollySykmelding
@@ -55,7 +54,7 @@ class SykmeldingServiceTest {
         coEvery { tsmPdlClient.getPerson(any()) } returns TsmPdlResponse(
             false, navn = Navn("fornavn", null, "etternavn"), fodselsdato = LocalDate.now(), doed = false
         )
-        repository = SykmeldingRepository(dataSource, sykmeldingObjectMapper)
+        repository = SykmeldingRepository(dataSource)
         mockKafkaProducer = mock<SykmeldingInputProducer>()
         service = SykmeldingService(mockKafkaProducer, repository, tsmPdlClient)
     }
