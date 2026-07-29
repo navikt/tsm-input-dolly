@@ -1,35 +1,28 @@
 plugins {
     alias(libs.plugins.kotlin.jvm)
-    alias(libs.plugins.ktor)
+    alias(ktorLibs.plugins.ktor)
     alias(libs.plugins.flyway)
-
 }
 
 group = "no.nav.tsm"
 version = "0.0.1"
 
-
 application {
     mainClass = "no.nav.tsm.ApplicationKt"
 }
 
-repositories {
-    mavenCentral()
-    maven { url = uri("https://github-package-registry-mirror.gc.nav.no/cached/maven-release") }
-}
-
 dependencies {
-    implementation(libs.ktor.server.content.negotiation)
-    implementation(libs.ktor.server.core)
-    implementation(libs.ktor.serialization.jackson)
-    implementation(libs.ktor.server.metrics)
-    implementation(libs.ktor.server.openapi)
-    implementation(libs.ktor.server.swagger.ui)
-    implementation(libs.ktor.server.netty)
-    implementation(libs.ktor.server.callid)
-    implementation(libs.ktor.client.core)
-    implementation(libs.ktor.client.negotiation)
-    implementation(libs.ktor.client.cio)
+    implementation(ktorLibs.server.contentNegotiation)
+    implementation(ktorLibs.server.core)
+    implementation(ktorLibs.serialization.jackson)
+    implementation(ktorLibs.server.metrics.micrometer)
+    implementation(ktorLibs.server.openapi)
+    implementation(ktorLibs.server.swagger)
+    implementation(ktorLibs.server.netty)
+    implementation(ktorLibs.server.callId)
+    implementation(ktorLibs.client.core)
+    implementation(ktorLibs.client.contentNegotiation)
+    implementation(ktorLibs.client.cio)
     implementation(libs.logback.classic)
     implementation(libs.micrometer.registry.prometheus)
     implementation(libs.tsm.sykmelding.input)
@@ -39,8 +32,8 @@ dependencies {
     implementation(libs.postgres)
     implementation(libs.flyway.core)
     implementation(libs.flyway.postgresql)
+    testImplementation(ktorLibs.server.testHost)
     testImplementation(libs.kotest.assertions)
-    testImplementation(libs.ktor.server.test.host)
     testImplementation(libs.kotlin.test)
     testImplementation(libs.testcontainers.postgresql)
     testImplementation(libs.mockito.kotlin)
@@ -52,7 +45,10 @@ dependencies {
 }
 tasks {
     shadowJar {
-        mergeServiceFiles {
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
+        mergeServiceFiles {}
+        from("src/main/resources/logback.xml") {
+            into("/")
         }
     }
     test {
