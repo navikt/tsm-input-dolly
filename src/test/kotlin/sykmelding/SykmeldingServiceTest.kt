@@ -1,34 +1,28 @@
 package no.nav.tsm.sykmelding
 
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
+import no.nav.tsm.pdl.Navn
+import no.nav.tsm.pdl.TsmPdlClient
+import no.nav.tsm.pdl.TsmPdlResponse
 import no.nav.tsm.sykmelding.exceptions.SykmeldingValidationException
-import no.nav.tsm.sykmelding.input.core.model.SykmeldingRecord
 import no.nav.tsm.sykmelding.input.producer.SykmeldingInputProducer
 import no.nav.tsm.sykmelding.model.Aktivitet
 import no.nav.tsm.sykmelding.model.DollySykmelding
 import no.nav.tsm.sykmelding.model.SykmeldingType
 import no.nav.tsm.sykmelding.repository.SykmeldingRepository
 import no.nav.tsm.sykmelding.testcontainers.PostgresSQL.Companion.postgres
-import no.nav.tsm.pdl.Navn
-import no.nav.tsm.pdl.TsmPdlClient
-import no.nav.tsm.pdl.TsmPdlResponse
 import org.flywaydb.core.Flyway
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.verify
 import org.postgresql.ds.PGSimpleDataSource
 import java.time.LocalDate
-import java.util.UUID
+import java.util.*
 import javax.sql.DataSource
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
+import kotlin.test.*
 
 class SykmeldingServiceTest {
 
@@ -55,7 +49,7 @@ class SykmeldingServiceTest {
             false, navn = Navn("fornavn", null, "etternavn"), fodselsdato = LocalDate.now(), doed = false
         )
         repository = SykmeldingRepository(dataSource)
-        mockKafkaProducer = mock<SykmeldingInputProducer>()
+        mockKafkaProducer = mockk<SykmeldingInputProducer>(relaxed = true)
         service = SykmeldingService(mockKafkaProducer, repository, tsmPdlClient)
     }
 
@@ -86,7 +80,7 @@ class SykmeldingServiceTest {
         val savedSykmelding = repository.getById(sykmeldingId)
         assertNotNull(savedSykmelding)
 
-        verify(mockKafkaProducer).sendSykmelding(org.mockito.kotlin.any<SykmeldingRecord>())
+        coVerify { mockKafkaProducer.sendSykmelding(any()) }
     }
 
     @Test

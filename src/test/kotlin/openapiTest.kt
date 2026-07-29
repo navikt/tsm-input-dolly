@@ -15,12 +15,12 @@ import no.nav.tsm.sykmelding.configureRouting
 import no.nav.tsm.sykmelding.exceptions.SykmeldingValidationException
 import no.nav.tsm.sykmelding.input.core.model.sykmeldingObjectMapper
 import no.nav.tsm.sykmelding.model.*
-import org.hamcrest.CoreMatchers.equalTo
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.TestInstance
 import java.time.LocalDate
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import org.hamcrest.Matchers.*
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class OpenApiTest {

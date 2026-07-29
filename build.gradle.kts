@@ -1,3 +1,5 @@
+import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
+
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(ktorLibs.plugins.ktor)
@@ -12,8 +14,8 @@ application {
 }
 
 dependencies {
-    implementation(ktorLibs.server.contentNegotiation)
     implementation(ktorLibs.server.core)
+    implementation(ktorLibs.server.contentNegotiation)
     implementation(ktorLibs.serialization.jackson)
     implementation(ktorLibs.server.metrics.micrometer)
     implementation(ktorLibs.server.openapi)
@@ -41,13 +43,12 @@ dependencies {
     testImplementation(libs.kotest.assertions)
     testImplementation(libs.kotlin.test)
     testImplementation(libs.testcontainers.postgresql)
-    testImplementation(libs.mockito.kotlin)
     testImplementation(libs.mockk)
     testImplementation(libs.kotlinx.coroutines.test)
-    testImplementation(libs.hamcrest)
     testImplementation(libs.rest.assured)
     testImplementation(libs.swagger.request.validator.rest.assured)
 }
+
 tasks {
     shadowJar {
         duplicatesStrategy = DuplicatesStrategy.INCLUDE
@@ -58,5 +59,18 @@ tasks {
     }
     test {
         useJUnitPlatform()
+    }
+
+    named<DependencyUpdatesTask>("dependencyUpdates") {
+        fun String.isNonStable(): Boolean {
+            val stableKeyword = listOf("RELEASE", "FINAL", "GA").any { uppercase().contains(it) }
+            val regex = "^[0-9,.v-]+(-r)?$".toRegex()
+            val isStable = stableKeyword || regex.matches(this)
+            return isStable.not()
+        }
+
+        rejectVersionIf {
+            candidate.version.isNonStable()
+        }
     }
 }
