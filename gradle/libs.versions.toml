@@ -1,6 +1,6 @@
 [versions]
 kotlin = "2.4.10"
-flyway = "13.0.0"
+flyway = "13.1.0"
 postgres = "42.7.13"
 
 logback = "1.6.1"
