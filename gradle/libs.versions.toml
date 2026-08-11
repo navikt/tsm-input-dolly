@@ -5,10 +5,8 @@ postgres = "42.7.13"
 
 logback = "1.6.1"
 logbackEncoder = "9.0"
-micrometer = "1.17.0"
-khealth = "3.0.2"
 
-sykmeldingInput = "27"
+sykmeldingInput = "29"
 
 testcontainers = "2.0.5"
 mockkVersion = "1.14.11"
@@ -24,8 +22,6 @@ flyway-postgresql = { module = "org.flywaydb:flyway-database-postgresql", versio
 
 logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 logback-encoder = { module = "net.logstash.logback:logstash-logback-encoder", version.ref = "logbackEncoder"}
-micrometer-registry-prometheus = { module = "io.micrometer:micrometer-registry-prometheus", version.ref = "micrometer" }
-khealth = { module = "dev.hayden:khealth", version.ref = "khealth" }
 
 tsm-sykmelding-input = { module = "no.nav.tsm.sykmelding:input", version.ref = "sykmeldingInput" }
 

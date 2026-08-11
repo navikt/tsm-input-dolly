@@ -5,11 +5,11 @@ import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
+import no.nav.tsm.ktor.kafka.sykmeldinger.SykmeldingInputProducer
 import no.nav.tsm.pdl.Navn
 import no.nav.tsm.pdl.TsmPdlClient
 import no.nav.tsm.pdl.TsmPdlResponse
 import no.nav.tsm.sykmelding.exceptions.SykmeldingValidationException
-import no.nav.tsm.sykmelding.input.producer.SykmeldingInputProducer
 import no.nav.tsm.sykmelding.model.Aktivitet
 import no.nav.tsm.sykmelding.model.DollySykmelding
 import no.nav.tsm.sykmelding.model.SykmeldingType
@@ -80,7 +80,7 @@ class SykmeldingServiceTest {
         val savedSykmelding = repository.getById(sykmeldingId)
         assertNotNull(savedSykmelding)
 
-        coVerify { mockKafkaProducer.sendSykmelding(any()) }
+        coVerify { mockKafkaProducer.send(any()) }
     }
 
     @Test

@@ -10,6 +10,7 @@ import io.restassured.RestAssured
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
+import no.nav.tsm.plugins.configureSerialization
 import no.nav.tsm.sykmelding.SykmeldingService
 import no.nav.tsm.sykmelding.configureRouting
 import no.nav.tsm.sykmelding.exceptions.SykmeldingValidationException

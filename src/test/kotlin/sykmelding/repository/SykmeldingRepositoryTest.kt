@@ -1,15 +1,13 @@
 package no.nav.tsm.sykmelding.repository
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
+import no.nav.tsm.pdl.Navn
 import no.nav.tsm.sykmelding.input.core.model.RuleType
-import no.nav.tsm.sykmelding.input.core.model.sykmeldingObjectMapper
 import no.nav.tsm.sykmelding.mapper.mapToSykmeldingRecord
 import no.nav.tsm.sykmelding.model.Aktivitet
 import no.nav.tsm.sykmelding.model.DollySykmelding
 import no.nav.tsm.sykmelding.testcontainers.PostgresSQL.Companion.postgres
-import no.nav.tsm.pdl.Navn
 import org.flywaydb.core.Flyway
 import org.postgresql.ds.PGSimpleDataSource
 import java.time.LocalDate
@@ -20,7 +18,6 @@ import kotlin.test.*
 class SykmeldingRepositoryTest {
     private lateinit var dataSource: DataSource
     private lateinit var repository: SykmeldingRepository
-    private val objectMapper: ObjectMapper = sykmeldingObjectMapper
     private val navn = Navn("fornavn", null, "etternavn")
     @BeforeTest
     fun setup() {

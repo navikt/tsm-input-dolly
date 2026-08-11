@@ -16,7 +16,7 @@ application {
 dependencies {
     implementation(ktorLibs.server.core)
     implementation(ktorLibs.server.contentNegotiation)
-    implementation(ktorLibs.serialization.jackson)
+    implementation(ktorLibs.serialization.jackson3)
     implementation(ktorLibs.server.metrics.micrometer)
     implementation(ktorLibs.server.openapi)
     implementation(ktorLibs.server.swagger)
@@ -29,8 +29,6 @@ dependencies {
 
     implementation(libs.logback.classic)
     implementation(libs.logback.encoder)
-    implementation(libs.micrometer.registry.prometheus)
-    implementation(libs.khealth)
 
     implementation(libs.postgres)
     implementation(libs.flyway.core)
@@ -38,7 +36,9 @@ dependencies {
 
     implementation(libs.tsm.sykmelding.input)
     implementation(tsmKtorLibs.core)
+    implementation(tsmKtorLibs.kafka.sykmeldinger)
 
+    testImplementation(tsmKtorLibs.kafka.test)
     testImplementation(ktorLibs.server.testHost)
     testImplementation(libs.kotest.assertions)
     testImplementation(libs.kotlin.test)

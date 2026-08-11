@@ -1,42 +1,31 @@
 package no.nav.tsm.plugins
 
-import io.ktor.server.application.Application
+import io.ktor.server.config.*
+import io.ktor.server.application.*
 import no.nav.tsm.ktor.nais.RuntimeCluster
 import no.nav.tsm.ktor.nais.getRuntimeCluster
-import org.apache.kafka.clients.CommonClientConfigs
-import java.util.Properties
+import kotlin.time.Duration
+
+class Runtime(val env: RuntimeCluster, val name: String)
+
+class ConsumerConfig(val poll: Duration, val retry: Duration)
 
 class Environment(
-    val runtime: RuntimeCluster,
-    val kafkaConfig: Properties,
-    val sykmeldingTopic: String,
+    val runtime: Runtime,
     val jdbcUrl: String,
+    val consumer: ConsumerConfig,
 )
 
-fun getEnvVar(varName: String, defaultValue: String? = null) =
-    System.getenv(varName)
-        ?: defaultValue
-        ?: throw RuntimeException("Missing required variable \"$varName\"")
-
-
-fun Application.createEnvironment(): Environment {
-    val runtime = getRuntimeCluster()
-
+fun createEnvironment(config: ApplicationConfig): Environment {
     return Environment(
-        runtime = runtime,
-        kafkaConfig = when (runtime) {
-            RuntimeCluster.LOCAL -> Properties().apply {
-                this[CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG] = "localhost:9092"
-                this[CommonClientConfigs.SECURITY_PROTOCOL_CONFIG] = "PLAINTEXT"
-            }
-
-            else -> Properties().apply {
-                environment.config.config("kafka.config").toMap().forEach {
-                    this[it.key] = it.value
-                }
-            }
-        },
-        sykmeldingTopic = "tsm.sykmeldinger",
-        jdbcUrl = environment.config.property("database.url").getString(),
+        runtime = Runtime(
+            env = getRuntimeCluster(),
+            name = config.property("app.name").getString()
+        ),
+        consumer = ConsumerConfig(
+            poll = config.property("consumer.poll").getAs(),
+            retry = config.property("consumer.retry").getAs(),
+        ),
+        jdbcUrl = config.property("database.url").getString(),
     )
 }

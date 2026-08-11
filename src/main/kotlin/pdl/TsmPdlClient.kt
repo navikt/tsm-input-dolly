@@ -8,7 +8,7 @@ import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
-import no.nav.tsm.ktor.auth.texas.TexasClient
+import no.nav.tsm.ktor.auth.texas.Texas
 import no.nav.tsm.ktor.auth.texas.TexasToken
 import java.time.LocalDate
 
@@ -27,7 +27,7 @@ data class Navn(
 
 
 class TsmPdlClient(
-    private val texasClient: TexasClient,
+    private val texasClient: Texas,
     private val httpClient: HttpClient,
 ) {
 

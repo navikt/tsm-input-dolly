@@ -1,11 +1,11 @@
 package no.nav.tsm.sykmelding.repository
 
-import com.fasterxml.jackson.core.JacksonException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import no.nav.tsm.ktor.logger
 import no.nav.tsm.sykmelding.input.core.model.SykmeldingRecord
 import no.nav.tsm.sykmelding.input.core.model.sykmeldingObjectMapper
+import tools.jackson.core.JacksonException
 import javax.sql.DataSource
 
 class SykmeldingRepository(
@@ -85,33 +85,6 @@ class SykmeldingRepository(
         dataSource.connection.use { connection ->
             connection.prepareStatement(sql).use { statement ->
                 statement.setString(1, sykmeldingId)
-                statement.executeUpdate()
-            }
-        }
-    }
-    suspend fun deleteByIdent(ident: String)  = withContext(Dispatchers.IO) {
-        val sql = "DELETE FROM sykmelding WHERE ident = ?"
-        dataSource.connection.use { connection ->
-            connection.prepareStatement(sql).use { statement ->
-                statement.setString(1, ident)
-                statement.executeUpdate()
-            }
-        }
-    }
-
-    suspend fun saveCorruptData(sykmeldingId: String, data: ByteArray) = withContext(Dispatchers.IO) {
-        val sql = """
-            INSERT INTO corrupt_data(sykmeldingId, data) 
-            VALUES (?, ?)
-            ON CONFLICT (sykmeldingId) 
-            DO UPDATE SET 
-                data = EXCLUDED.data
-        """.trimIndent()
-
-        dataSource.connection.use { connection ->
-            connection.prepareStatement(sql).use { statement ->
-                statement.setString(1, sykmeldingId)
-                statement.setBytes(2, data)
                 statement.executeUpdate()
             }
         }

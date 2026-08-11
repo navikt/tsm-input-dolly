@@ -2,9 +2,9 @@ package no.nav.tsm.sykmelding
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import no.nav.tsm.ktor.kafka.sykmeldinger.SykmeldingInputProducer
 import no.nav.tsm.sykmelding.exceptions.SykmeldingValidationException
 import no.nav.tsm.sykmelding.input.core.model.SykmeldingRecord
-import no.nav.tsm.sykmelding.input.producer.SykmeldingInputProducer
 import no.nav.tsm.sykmelding.mapper.mapToSykmeldingRecord
 import no.nav.tsm.sykmelding.model.Aktivitet
 import no.nav.tsm.sykmelding.model.DollySykmelding
@@ -37,13 +37,13 @@ class SykmeldingService(
 
         sykmeldingRepository.saveSykmelding(sykmeldingId, sykmelding.ident, sykmeldingRecord)
         withContext(Dispatchers.IO) {
-            sykmeldingProducer.sendSykmelding(sykmeldingRecord)
+            sykmeldingProducer.send(sykmeldingRecord)
         }
 
         return sykmeldingId
     }
 
-    private suspend fun validateSykmelding(sykmelding: DollySykmelding, person: TsmPdlResponse?) {
+    private fun validateSykmelding(sykmelding: DollySykmelding, person: TsmPdlResponse?) {
 
         if (person == null) {
             throw SykmeldingValidationException("Fant ikke person i PDL")
@@ -59,7 +59,8 @@ class SykmeldingService(
             throw SykmeldingValidationException("${sykmelding.type} sykmelding må ha nøyaktig én aktivitet")
         }
         if (sykmelding.type != SykmeldingType.VANLIG &&
-            sykmelding.aktivitet.any { it.grad != null || it.reisetilskudd }) {
+            sykmelding.aktivitet.any { it.grad != null || it.reisetilskudd }
+        ) {
             throw SykmeldingValidationException("grad og reisetilskudd kan kun brukes for VANLIG sykmelding")
         }
         if (sykmelding.aktivitet.any { it.reisetilskudd && it.grad == null }) {
@@ -119,6 +120,7 @@ class SykmeldingService(
                         grad = core.grad,
                         reisetilskudd = core.reisetilskudd,
                     )
+
                     else -> Aktivitet(fom = core.fom, tom = core.tom)
                 }
             }
@@ -136,7 +138,7 @@ class SykmeldingService(
         val sykmeldinger = sykmeldingRepository.getByIdent(ident).map { it.sykmelding.id }
         withContext(Dispatchers.IO) {
             sykmeldinger.forEach { sykmeldingId ->
-                sykmeldingProducer.tombstoneSykmelding(sykmeldingId)
+                sykmeldingProducer.tombstone(sykmeldingId)
             }
         }
     }
