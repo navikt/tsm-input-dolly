@@ -1,9 +1,9 @@
 [versions]
 kotlin = "2.4.10"
-flyway = "13.0.0"
+flyway = "13.2.0"
 postgres = "42.7.13"
 
-logback = "1.6.1"
+logback = "1.6.2"
 logbackEncoder = "9.0"
 
 sykmeldingInput = "29"
