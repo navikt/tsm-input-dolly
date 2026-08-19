@@ -34,7 +34,7 @@ dependencies {
     implementation(libs.flyway.core)
     implementation(libs.flyway.postgresql)
 
-    implementation(libs.tsm.sykmelding.input)
+    implementation(libs.tsm.sykmeldinger.input)
     implementation(tsmKtorLibs.core)
     implementation(tsmKtorLibs.kafka.sykmeldinger)
 
