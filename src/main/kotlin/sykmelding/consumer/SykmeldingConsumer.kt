@@ -15,8 +15,8 @@ fun Application.configureSykmeldingConsumer() {
         groupId = "tsm-input-dolly"
         pollDuration = env.consumer.poll
         retryDuration = env.consumer.retry
-        onRecord = {
-            consumerService.handleSykmelding(it)
+        onRecord = { record, _ ->
+            consumerService.handleSykmelding(record)
         }
         onTombstone = {
             consumerService.handleTombstone(it.key)

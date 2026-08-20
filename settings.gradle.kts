@@ -1,7 +1,7 @@
 rootProject.name = "input-dolly"
 
 val ktorVersion = "3.5.1"
-val tsmKtorVersion = "1.2.0"
+val tsmKtorVersion = "1.2.5"
 
 dependencyResolutionManagement {
     repositories {
