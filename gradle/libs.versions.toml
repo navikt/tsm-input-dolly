@@ -3,9 +3,6 @@ kotlin = "2.4.10"
 flyway = "13.3.0"
 postgres = "42.7.13"
 
-logback = "1.6.3"
-logbackEncoder = "9.0"
-
 tsm-sykmeldinger-input = "29"
 
 testcontainers = "2.0.5"
@@ -19,9 +16,6 @@ kotest-assertions = "6.2.4"
 postgres = { module = "org.postgresql:postgresql", version.ref = "postgres" }
 flyway-core = { module = "org.flywaydb:flyway-core", version.ref = "flyway" }
 flyway-postgresql = { module = "org.flywaydb:flyway-database-postgresql", version.ref = "flyway" }
-
-logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
-logback-encoder = { module = "net.logstash.logback:logstash-logback-encoder", version.ref = "logbackEncoder"}
 
 tsm-sykmeldinger-input = { module = "no.nav.tsm.sykmelding:input", version.ref = "tsm-sykmeldinger-input" }
 

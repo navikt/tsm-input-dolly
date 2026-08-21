@@ -27,9 +27,6 @@ dependencies {
     implementation(ktorLibs.client.apache5)
     implementation(ktorLibs.client.contentNegotiation)
 
-    implementation(libs.logback.classic)
-    implementation(libs.logback.encoder)
-
     implementation(libs.postgres)
     implementation(libs.flyway.core)
     implementation(libs.flyway.postgresql)
