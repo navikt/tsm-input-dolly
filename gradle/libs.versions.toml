@@ -1,9 +1,9 @@
 [versions]
 kotlin = "2.4.10"
-flyway = "13.0.0"
+flyway = "13.3.0"
 postgres = "42.7.13"
 
-logback = "1.6.1"
+logback = "1.6.3"
 logbackEncoder = "9.0"
 
 tsm-sykmeldinger-input = "29"
@@ -13,7 +13,7 @@ mockkVersion = "1.14.11"
 kotlinxCoroutinesTest = "1.11.0"
 restAssured = "6.0.1"
 swaggerValidatorResetAssured = "3.0.0"
-kotest-assertions = "6.2.3"
+kotest-assertions = "6.2.4"
 
 [libraries]
 postgres = { module = "org.postgresql:postgresql", version.ref = "postgres" }
