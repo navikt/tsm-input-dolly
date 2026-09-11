@@ -23,7 +23,10 @@ fun Application.configureDependencies() {
         provide(Texas::class)
         provide(TsmPdlClient::class)
         provide<DataSource> {
-            PGSimpleDataSource().apply { setURL(resolve<Environment>().jdbcUrl) }
+            PGSimpleDataSource().apply {
+                setURL(resolve<Environment>().jdbcUrl)
+                prepareThreshold = 0
+            }
         }
         provide<SykmeldingInputProducer> { this@configureDependencies.sykmeldingInputProducer() }
         provide(SykmeldingRepository::class)

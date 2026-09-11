@@ -16,6 +16,7 @@ fun Application.configureDatabase() {
     val flyway = Flyway.configure()
         .dataSource(PGSimpleDataSource().apply {
             setURL(url)
+            prepareThreshold = 0
         })
         .locations("db/migrations")
         .load()
