@@ -76,6 +76,7 @@ fun mapToSykmeldingRecord(sykmeldingId: String, sykmelding: DollySykmelding, nav
             tilbakedatering = null,
             bistandNav = null,
             utdypendeSporsmal = null,
+            prognose = null,
         ),
         validation = ValidationResult(
             status = RuleType.OK,

@@ -3,7 +3,7 @@ kotlin = "2.4.10"
 flyway = "13.3.0"
 postgres = "42.7.13"
 
-tsm-sykmeldinger-input = "29"
+tsm-sykmeldinger-input = "30"
 
 testcontainers = "2.0.5"
 mockkVersion = "1.14.11"
