@@ -2,7 +2,6 @@ version: v1
 type: Postgres
 name: tsm-input-dolly-postgres
 spec:
-  activeBranch: main
   majorVersion: "18"
   highAvailability: false
   resources:
