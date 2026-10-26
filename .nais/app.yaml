@@ -1,4 +1,16 @@
 ---
+version: v1
+type: Postgres
+name: tsm-input-dolly-postgres
+spec:
+  activeBranch: main
+  majorVersion: "18"
+  highAvailability: false
+  resources:
+    cpu: 50m
+    diskSize: 5Gi
+    memory: 512Mi
+---
 apiVersion: data.nais.io/v1
 kind: Postgres
 metadata:
@@ -20,12 +32,16 @@ metadata:
   labels:
     team: tsm
 spec:
-  image: {{ image }}
   port: 8080
   replicas:
     min: 1
     max: 2
     cpuThresholdPercentage: 90
+  # New nais postgres database:
+  uses:
+    postgres:
+      - name: tsm-input-dolly-postgres
+  # Old zalando database:
   postgres:
     clusterName: tsm-input-dolly-postgres-cluster
   filesFrom:
