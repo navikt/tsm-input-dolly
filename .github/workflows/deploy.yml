@@ -52,6 +52,8 @@ jobs:
           team: tsm
       - name: deploy to dev-gcp
         run: |
+          nais apply .nais/nais-zalando.yaml --environment dev-gcp --wait
+          nais apply .nais/nais-postgres.yaml --environment dev-gcp --wait
           nais apply .nais/app.yaml \
             --environment dev-gcp \
             --set spec.image="${{ needs.build.outputs.image }}" \

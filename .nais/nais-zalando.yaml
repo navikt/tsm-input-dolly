@@ -1,0 +1,12 @@
+apiVersion: data.nais.io/v1
+kind: Postgres
+metadata:
+  name: tsm-input-dolly-postgres-cluster
+  namespace: tsm
+spec:
+  cluster:
+    majorVersion: "17"
+    resources:
+      cpu: 50m
+      diskSize: 5Gi
+      memory: 1G
