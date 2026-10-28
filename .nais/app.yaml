@@ -11,13 +11,9 @@ spec:
     min: 1
     max: 2
     cpuThresholdPercentage: 90
-  # New nais postgres database:
-  # uses:
-  #   postgres:
-  #     - name: tsm-input-dolly-postgres
-  # Old zalando database:
-  postgres:
-    clusterName: tsm-input-dolly-postgres-cluster
+  uses:
+    postgres:
+      - name: tsm-input-dolly-postgres
   filesFrom:
     - emptyDir:
         medium: Memory

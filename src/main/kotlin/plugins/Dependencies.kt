@@ -24,7 +24,7 @@ fun Application.configureDependencies() {
         provide(TsmPdlClient::class)
         provide<DataSource> {
             PGSimpleDataSource().apply {
-                setURL(resolve<Environment>().jdbcUrl)
+                setURL(resolve<Environment>().appJdbcUrl)
                 prepareThreshold = 0
             }
         }

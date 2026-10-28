@@ -9,7 +9,7 @@ import org.postgresql.ds.PGSimpleDataSource
 fun Application.configureDatabase() {
     val logger = logger()
     val env: Environment by dependencies
-    val url = env.jdbcUrl
+    val url = env.migrationJdbcUrl
 
     logger.info("Running Flyway migrations...")
 
@@ -25,6 +25,3 @@ fun Application.configureDatabase() {
 
     logger.info("Flyway migrations completed successfully")
 }
-
-
-
