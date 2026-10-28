@@ -35,7 +35,8 @@ class ApplicationTest {
                             poll = 1.seconds,
                             retry = 1.seconds
                         ),
-                        jdbcUrl = postgres.jdbcUrl
+                        appJdbcUrl = postgres.jdbcUrl,
+                        migrationJdbcUrl = postgres.jdbcUrl,
                     )
                 }
                 provide<Texas> { mockk() }

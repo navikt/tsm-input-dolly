@@ -12,7 +12,8 @@ class ConsumerConfig(val poll: Duration, val retry: Duration)
 
 class Environment(
     val runtime: Runtime,
-    val jdbcUrl: String,
+    val appJdbcUrl: String,
+    val migrationJdbcUrl: String,
     val consumer: ConsumerConfig,
 )
 
@@ -26,6 +27,7 @@ fun createEnvironment(config: ApplicationConfig): Environment {
             poll = config.property("consumer.poll").getAs(),
             retry = config.property("consumer.retry").getAs(),
         ),
-        jdbcUrl = config.property("database.url").getString(),
+        appJdbcUrl = config.property("database.app.jdbcUrl").getString(),
+        migrationJdbcUrl = config.property("database.migration.jdbcUrl").getString(),
     )
 }
