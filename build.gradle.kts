@@ -46,6 +46,10 @@ dependencies {
     testImplementation(libs.swagger.request.validator.rest.assured)
 }
 
+kotlin {
+    jvmToolchain(25)
+}
+
 tasks {
     shadowJar {
         duplicatesStrategy = DuplicatesStrategy.INCLUDE
